@@ -312,7 +312,28 @@ select.input-field option{background:var(--bg2)}
 let currentUser=null,isAdmin=false,allMembers=[],allPosts=[],editingKey=null,selectedPhotoFile=null,selectedPeditFile=null,selectedPostFile=null;
 let treeScale=1,treeOffsetX=0,treeOffsetY=0,treeDragging=false,treeDragStart={x:0,y:0};
 
-function safeKey(s){return s.replace(/[.#$\[\]\/\s]/g,'_');}
+function safeKey(s){return s.replace(/[.#$\[\]\/\s]/
+function getLocation(){
+  if(!navigator.geolocation){
+    showToast("Location дэмжигдэхгүй","error");
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(pos=>{
+    const lat=pos.coords.latitude;
+    const lng=pos.coords.longitude;
+
+    currentUser.location={
+      lat:lat,
+      lng:lng,
+      time:Date.now()
+    };
+
+    fbSet('members/'+currentUser.key,currentUser);
+
+    showToast("📍 Байршил хадгалагдлаа");
+  });
+}
 function showRegister(){document.getElementById('auth-login').style.display='none';document.getElementById('auth-register').style.display='block';}
 function showLogin(){document.getElementById('auth-register').style.display='none';document.getElementById('auth-login').style.display='block';}
 
