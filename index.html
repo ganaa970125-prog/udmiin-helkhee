@@ -3,21 +3,55 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Удмын хэлхээ">
 <title>Удмын хэлхээ</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
 <script>
 const FB_DB_URL='https://udmiin-helkhee-default-rtdb.firebaseio.com';
 const FB_BUCKET='udmiin-helkhee.appspot.com';
-async function fbGet(p){const r=await fetch(FB_DB_URL+'/'+p+'.json');if(!r.ok)throw new Error('fbGet '+r.status);return await r.json();}
-async function fbSet(p,d){const r=await fetch(FB_DB_URL+'/'+p+'.json',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(d)});if(!r.ok)throw new Error('fbSet '+r.status);}
-async function fbPush(p,d){const r=await fetch(FB_DB_URL+'/'+p+'.json',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(d)});if(!r.ok)throw new Error('fbPush '+r.status);return(await r.json()).name;}
-async function fbRemove(p){const r=await fetch(FB_DB_URL+'/'+p+'.json',{method:'DELETE'});if(!r.ok)throw new Error('fbRemove '+r.status);}
-async function uploadFile(file,folder){const name=encodeURIComponent(folder+'/'+Date.now()+'_'+file.name.replace(/\s/g,'_'));const url='https://firebasestorage.googleapis.com/v0/b/'+FB_BUCKET+'/o?uploadType=media&name='+name;const r=await fetch(url,{method:'POST',headers:{'Content-Type':file.type},body:file});if(!r.ok)throw new Error('upload '+r.status);const meta=await r.json();return 'https://firebasestorage.googleapis.com/v0/b/'+FB_BUCKET+'/o/'+encodeURIComponent(meta.name)+'?alt=media';}
+const FB_API_KEY='AIzaSyXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX';
+
+let fbToken=null;
+let fbUID=null;
+
+async function fbAuthReq(endpoint,body){
+  const r=await fetch('https://identitytoolkit.googleapis.com/v1/accounts:'+endpoint+'?key='+FB_API_KEY,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+  const d=await r.json();if(d.error)throw new Error(d.error.message);return d;
+}
+async function fbGet(p){
+  const url=FB_DB_URL+'/'+p+'.json'+(fbToken?'?auth='+fbToken:'');
+  const r=await fetch(url);if(!r.ok)throw new Error('fbGet '+r.status);return await r.json();
+}
+async function fbSet(p,d){
+  const url=FB_DB_URL+'/'+p+'.json'+(fbToken?'?auth='+fbToken:'');
+  const r=await fetch(url,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(d)});if(!r.ok)throw new Error('fbSet '+r.status);
+}
+async function fbPush(p,d){
+  const url=FB_DB_URL+'/'+p+'.json'+(fbToken?'?auth='+fbToken:'');
+  const r=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(d)});if(!r.ok)throw new Error('fbPush '+r.status);return(await r.json()).name;
+}
+async function fbRemove(p){
+  const url=FB_DB_URL+'/'+p+'.json'+(fbToken?'?auth='+fbToken:'');
+  const r=await fetch(url,{method:'DELETE'});if(!r.ok)throw new Error('fbRemove '+r.status);
+}
+async function fbUpdate(p,d){
+  const url=FB_DB_URL+'/'+p+'.json'+(fbToken?'?auth='+fbToken:'');
+  const r=await fetch(url,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify(d)});if(!r.ok)throw new Error('fbUpdate '+r.status);
+}
+async function uploadFile(file,folder){
+  const name=encodeURIComponent(folder+'/'+Date.now()+'_'+file.name.replace(/\s/g,'_'));
+  const url='https://firebasestorage.googleapis.com/v0/b/'+FB_BUCKET+'/o?uploadType=media&name='+name+(fbToken?'&token='+fbToken:'');
+  const r=await fetch(url,{method:'POST',headers:{'Content-Type':file.type},body:file});if(!r.ok)throw new Error('upload '+r.status);
+  const meta=await r.json();
+  return 'https://firebasestorage.googleapis.com/v0/b/'+FB_BUCKET+'/o/'+encodeURIComponent(meta.name)+'?alt=media';
+}
 </script>
+
 <style>
 :root{--bg:#060a0f;--bg2:#0a1018;--bg3:#0f1620;--card:rgba(255,255,255,0.035);--cb:rgba(255,255,255,0.07);--neon:#00ff88;--neon2:#00e5ff;--text:#dff5ec;--text2:#5a7268;--danger:#ff4d6d;--warn:#ffb347;--nav-h:76px;--sb:env(safe-area-inset-bottom,0px)}
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -81,8 +115,10 @@ select.input-field option{background:var(--bg2)}
 .detail-row:last-child{border-bottom:none}
 .detail-key{font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:.7px}
 .detail-val{font-size:14px;color:var(--text);margin-top:2px}
-.photo-upload-area{border:1px dashed rgba(0,255,136,0.25);border-radius:14px;padding:22px;text-align:center;cursor:pointer;background:rgba(0,255,136,0.02)}
+.photo-upload-area{border:1px dashed rgba(0,255,136,0.25);border-radius:14px;padding:22px;text-align:center;cursor:pointer;background:rgba(0,255,136,0.02);position:relative}
 .photo-preview{width:76px;height:76px;border-radius:50%;object-fit:cover;border:2px solid var(--neon);display:block;margin:0 auto 8px}
+.photo-remove-btn{position:absolute;top:8px;right:8px;width:26px;height:26px;border-radius:50%;background:rgba(255,77,109,0.9);border:none;color:#fff;font-size:14px;font-weight:700;cursor:pointer;display:none;align-items:center;justify-content:center;line-height:1;z-index:5}
+.photo-remove-btn.show{display:flex}
 .search-bar{margin:0 14px 11px;position:relative}
 .search-bar svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);pointer-events:none}
 .search-bar input{width:100%;background:var(--card);border:1px solid var(--cb);border-radius:12px;padding:11px 14px 11px 38px;color:var(--text);font-size:14px;font-family:'Inter',sans-serif;outline:none}
@@ -169,7 +205,9 @@ select.input-field option{background:var(--bg2)}
 .composer-actions{display:flex;gap:8px}
 .composer-photo-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:9px;background:rgba(0,255,136,0.05);border:1px solid rgba(0,255,136,0.15);border-radius:10px;color:var(--text2);font-size:12px;cursor:pointer;font-family:'Inter',sans-serif}
 .composer-submit-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:9px;background:linear-gradient(135deg,var(--neon),var(--neon2));border:none;border-radius:10px;color:#030f08;font-size:12px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif}
-.post-preview-img{width:100%;border-radius:10px;margin-top:10px;max-height:200px;object-fit:cover;display:none}
+.post-preview-wrap{position:relative;margin-top:10px;display:none}
+.post-preview-img{width:100%;border-radius:10px;max-height:200px;object-fit:cover;display:block}
+.post-preview-remove{position:absolute;top:6px;right:6px;width:26px;height:26px;border-radius:50%;background:rgba(255,77,109,0.9);border:none;color:#fff;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center}
 .post-card{margin:0 14px 12px;background:var(--card);border:1px solid var(--cb);border-radius:16px;overflow:hidden}
 .post-header{display:flex;align-items:center;gap:10px;padding:13px 14px 10px}
 .post-avatar{width:36px;height:36px;border-radius:50%;object-fit:cover;border:1px solid rgba(0,255,136,0.3);flex-shrink:0}
@@ -187,38 +225,52 @@ select.input-field option{background:var(--bg2)}
 .post-delete{margin-left:auto;color:var(--danger);font-size:11px;cursor:pointer;opacity:0.6}
 .edu-block{background:rgba(0,255,136,0.03);border:1px solid rgba(0,255,136,0.1);border-radius:12px;padding:12px;margin-bottom:10px}
 .edu-block-title{font-size:10px;font-weight:700;letter-spacing:1.5px;color:var(--neon);margin-bottom:8px;text-transform:uppercase}
+#map-page{overflow:hidden}
+#map-container{flex:1;position:relative;margin:0 14px;border-radius:16px;border:1px solid rgba(0,255,136,0.08);overflow:hidden;min-height:300px}
+#gmap{width:100%;height:100%;min-height:300px;border-radius:16px}
+.map-legend{position:absolute;bottom:14px;left:14px;background:rgba(6,10,15,0.9);border:1px solid rgba(0,255,136,0.15);border-radius:10px;padding:10px 13px;z-index:10}
+.map-legend-item{display:flex;align-items:center;gap:7px;font-size:11px;color:var(--text2);margin-bottom:5px}
+.map-legend-item:last-child{margin-bottom:0}
+.map-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.confirm-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.85);backdrop-filter:blur(8px);z-index:600;display:none;align-items:center;justify-content:center;padding:20px}
+.confirm-overlay.open{display:flex}
+.confirm-box{background:var(--bg2);border:1px solid rgba(255,77,109,0.25);border-radius:20px;padding:24px 20px;max-width:320px;width:100%;text-align:center}
+.confirm-title{font-size:16px;font-weight:700;color:var(--text);margin-bottom:8px}
+.confirm-msg{font-size:13px;color:var(--text2);margin-bottom:20px;line-height:1.5}
+.confirm-btns{display:flex;gap:10px}
 </style>
 </head>
 <body>
-<div id="login-page">
-  <div class="login-glow"></div>
-  <div class="login-logo">Удмын хэлхээ</div>
-  <div class="login-sub">Угсаатны мод</div>
-  <div class="login-card">
-    <div class="login-divider"></div>
-    <div id="auth-login">
-      <div class="input-group"><div class="input-label">Таны ID</div><input id="login-id" class="input-field" placeholder="" autocomplete="off" autocorrect="off" spellcheck="false"></div>
-      <div class="input-group"><div class="input-label">Нууц үг</div><div class="pw-wrap"><input id="login-pw" class="input-field" type="password" placeholder="••••••••"><button class="pw-toggle" onclick="togglePw('login-pw',this)" type="button"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg></button></div></div>
-      <button class="btn btn-neon" onclick="doLogin()" id="login-btn">Нэвтрэх</button>
-      <div class="auth-toggle">Бүртгэлгүй юу? <span onclick="showRegister()">Бүртгүүлэх</span></div>
-    </div>
-    <div id="auth-register" style="display:none">
-      <div class="input-group"><div class="input-label">Шинэ ID</div><input id="reg-id" class="input-field" placeholder="" autocomplete="off" autocorrect="off" spellcheck="false"></div>
-      <div class="input-group"><div class="input-label">Нууц үг (6+)</div><div class="pw-wrap"><input id="reg-pw" class="input-field" type="password" placeholder="••••••••"><button class="pw-toggle" onclick="togglePw('reg-pw',this)" type="button"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg></button></div></div>
-      <div class="input-group"><div class="input-label">Давтах</div><div class="pw-wrap"><input id="reg-pw2" class="input-field" type="password" placeholder="••••••••"><button class="pw-toggle" onclick="togglePw('reg-pw2',this)" type="button"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg></button></div></div>
-      <button class="btn btn-neon" onclick="doRegister()" id="reg-btn">Бүртгүүлэх</button>
-      <div class="auth-toggle">Бүртгэлтэй юу? <span onclick="showLogin()">Нэвтрэх</span></div>
-    </div>
-  </div>
+
+<!-- LOGIN PAGE -->
+<div id="auth-login">
+  <div class="input-group"><div class="input-label">Хэрэглэгчийн ID</div><input id="login-id" class="input-field" placeholder="gansu01" type="text" autocomplete="username"></div>
+  <div class="input-group"><div class="input-label">Нууц код</div><div class="pw-wrap"><input id="login-pw" class="input-field" type="password" placeholder="••••••••"><button class="pw-toggle" onclick="togglePw('login-pw',this)" type="button"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg></button></div></div>
+  <button class="btn btn-neon" onclick="doLogin()" id="login-btn">Нэвтрэх</button>
+  <div class="auth-toggle">Бүртгэлгүй юу? <span onclick="showRegister()">Бүртгүүлэх</span></div>
 </div>
+<div id="auth-register" style="display:none">
+  <div class="input-group"><div class="input-label">Хэрэглэгчийн ID *</div><input id="reg-id" class="input-field" placeholder="gansu01 (латин үсэг, тоо)" type="text" autocomplete="username"></div>
+  <div class="input-group"><div class="input-label">Нууц код (6+)</div><div class="pw-wrap"><input id="reg-pw" class="input-field" type="password" placeholder="••••••••"><button class="pw-toggle" onclick="togglePw('reg-pw',this)" type="button"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg></button></div></div>
+  <div class="input-group"><div class="input-label">Давтах</div><div class="pw-wrap"><input id="reg-pw2" class="input-field" type="password" placeholder="••••••••"><button class="pw-toggle" onclick="togglePw('reg-pw2',this)" type="button"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg></button></div></div>
+  <button class="btn btn-neon" onclick="doRegister()" id="reg-btn">Бүртгүүлэх</button>
+  <div class="auth-toggle">Бүртгэлтэй юу? <span onclick="showLogin()">Нэвтрэх</span></div>
+</div>
+
+</div>
+</div>
+
+<!-- BOTTOM NAV -->
 <nav class="bottom-nav" id="bottom-nav" style="display:none">
   <div class="nav-item active" onclick="goPage('home',this)"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span>Нүүр</span></div>
   <div class="nav-item" onclick="goPage('feed',this)"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span>Мэдээ</span></div>
   <div class="nav-item" onclick="goPage('members',this)"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg><span>Гишүүд</span></div>
   <div class="nav-item" onclick="goPage('tree',this)"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="4" r="2"/><circle cx="5" cy="12" r="2"/><circle cx="19" cy="12" r="2"/><circle cx="5" cy="20" r="2"/><circle cx="19" cy="20" r="2"/><line x1="12" y1="6" x2="12" y2="10"/><line x1="12" y1="10" x2="5" y2="12"/><line x1="12" y1="10" x2="19" y2="12"/><line x1="5" y1="14" x2="5" y2="18"/><line x1="19" y1="14" x2="19" y2="18"/></svg><span>Мод</span></div>
+  <div class="nav-item" onclick="goPage('map',this)"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg><span>Газар</span></div>
   <div class="nav-item" onclick="goPage('profile',this)"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span>Профайл</span></div>
 </nav>
 
+<!-- HOME PAGE -->
 <div id="page-home" class="page active">
   <div class="page-header"><div><div class="page-title">Удмын хэлхээ</div><div class="page-sub" id="home-greeting">Тавтай морилно уу</div></div><div id="admin-badge" style="display:none"><span class="badge badge-admin">★ Админ</span></div></div>
   <div class="stats-row"><div class="stat-box"><div class="stat-num" id="stat-total">0</div><div class="stat-lbl">Гишүүн</div></div><div class="stat-box"><div class="stat-num" id="stat-gen">0</div><div class="stat-lbl">Үе</div></div><div class="stat-box"><div class="stat-num" id="stat-loc">0</div><div class="stat-lbl">Байршил</div></div></div>
@@ -228,23 +280,26 @@ select.input-field option{background:var(--bg2)}
   <div id="recent-list"><div class="empty-state"><div class="spinner" style="margin:0 auto 12px"></div></div></div>
 </div>
 
+<!-- FEED PAGE -->
 <div id="page-feed" class="page">
   <div class="page-header"><div><div class="page-title">Мэдээ</div><div class="page-sub">Гэр бүлийн мэдээ</div></div></div>
   <div class="post-composer">
     <div class="post-composer-top"><div class="composer-avatar" id="composer-avatar-wrap"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3a5248" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div><textarea class="composer-input" id="post-text" placeholder="Юу бодож байна вэ?" rows="2"></textarea></div>
-    <img id="post-preview-img" class="post-preview-img" alt="">
+    <div class="post-preview-wrap" id="post-preview-wrap"><img id="post-preview-img" class="post-preview-img" alt=""><button class="post-preview-remove" onclick="removePostPhoto()">✕</button></div>
     <input type="file" id="post-photo-input" accept="image/*" style="display:none" onchange="previewPostPhoto(this)">
     <div class="composer-actions"><button class="composer-photo-btn" onclick="document.getElementById('post-photo-input').click()">📷 Зураг</button><button class="composer-submit-btn" onclick="submitPost()">➤ Нийтлэх</button></div>
   </div>
   <div id="feed-list"><div class="empty-state"><div class="spinner" style="margin:0 auto 12px"></div></div></div>
 </div>
 
+<!-- MEMBERS PAGE -->
 <div id="page-members" class="page">
   <div class="page-header"><div><div class="page-title">Гишүүд</div></div></div>
   <div class="search-bar"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#3a5248" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input id="search-input" placeholder="Нэрээр хайх..." oninput="filterMembers(this.value)"></div>
   <div id="members-list"><div class="empty-state"><div class="spinner" style="margin:0 auto 12px"></div></div></div>
 </div>
 
+<!-- TREE PAGE -->
 <div id="page-tree" class="page">
   <div class="page-header"><div><div class="page-title">Удмын мод</div><div class="page-sub" id="tree-subtitle">Үеийн бүтэц</div></div></div>
   <div id="tree-container">
@@ -255,20 +310,45 @@ select.input-field option{background:var(--bg2)}
   </div>
 </div>
 
+<!-- MAP PAGE -->
+<div id="page-map" class="page">
+  <div class="page-header"><div><div class="page-title">Байршил</div><div class="page-sub">Бүртгэлийн газар</div></div></div>
+  <div id="map-container">
+    <div id="gmap"></div>
+    <div class="map-legend">
+      <div class="map-legend-item"><div class="map-dot" style="background:#00ff88"></div><span>Бүртгэлтэй гишүүн</span></div>
+      <div class="map-legend-item"><div class="map-dot" style="background:#00e5ff"></div><span>Та</span></div>
+    </div>
+  </div>
+  <div style="padding:12px 14px;font-size:12px;color:var(--text2);line-height:1.6">Ногоон цэг — бүртгэлийн үед оруулсан GPS байршил.<br>Байршил бүртгэхийн тулд гишүүнийг засахдаа "GPS авах" дарна.</div>
+</div>
+
+<!-- PROFILE PAGE -->
 <div id="page-profile" class="page">
   <div class="page-header"><div><div class="page-title">Профайл</div></div></div>
   <div id="my-profile-content"><div class="empty-state"><div class="spinner" style="margin:0 auto 12px"></div></div></div>
 </div>
 
+<!-- FAB -->
 <button class="fab hidden" id="fab-add" onclick="openAddModal()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#030f08" stroke-width="2.8"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
 
+<!-- DETAIL MODAL -->
 <div class="modal-overlay" id="detail-modal"><div class="modal-sheet"><div class="modal-handle" onclick="closeModal('detail-modal')"></div><div id="detail-content"></div></div></div>
 
+<!-- ADD/EDIT MEMBER MODAL -->
 <div class="modal-overlay" id="form-modal">
   <div class="modal-sheet">
     <div class="modal-handle" onclick="closeModal('form-modal')"></div>
     <div class="modal-title" id="form-modal-title">Гишүүн нэмэх</div>
-    <div style="margin-bottom:14px"><div class="photo-upload-area" onclick="document.getElementById('photo-input').click()"><img id="photo-preview-img" class="photo-preview" src="" alt="" style="display:none"><svg id="photo-icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#3a5248" stroke-width="1.5" style="display:block;margin:0 auto 8px"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg><p style="color:var(--text2);font-size:13px" id="photo-text">Зураг сонгох</p></div><input type="file" id="photo-input" accept="image/*" style="display:none" onchange="previewPhoto(this)"></div>
+    <div style="margin-bottom:14px;position:relative">
+      <div class="photo-upload-area" onclick="document.getElementById('photo-input').click()" id="photo-upload-area">
+        <img id="photo-preview-img" class="photo-preview" src="" alt="" style="display:none">
+        <svg id="photo-icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#3a5248" stroke-width="1.5" style="display:block;margin:0 auto 8px"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        <p style="color:var(--text2);font-size:13px" id="photo-text">Зураг сонгох</p>
+      </div>
+      <button class="photo-remove-btn" id="photo-remove-btn" onclick="removeFormPhoto(event)">✕</button>
+      <input type="file" id="photo-input" accept="image/*" style="display:none" onchange="previewPhoto(this)">
+    </div>
     <div class="input-group"><div class="input-label">Овог *</div><input id="f-ovog" class="input-field" placeholder="Овог"></div>
     <div class="input-group"><div class="input-label">Нэр *</div><input id="f-ner" class="input-field" placeholder="Нэр"></div>
     <div class="input-group"><div class="input-label">Хүйс</div><select id="f-huys" class="input-field"><option value="">—</option><option>Эрэгтэй</option><option>Эмэгтэй</option></select></div>
@@ -279,26 +359,35 @@ select.input-field option{background:var(--bg2)}
     <div class="input-group"><div class="input-label">Одоо суугаа газар</div><input id="f-lives-place" class="input-field" placeholder="Токио, Япон"></div>
     <div class="input-group"><div class="input-label">Мэргэжил</div><input id="f-job" class="input-field" placeholder="Инженер, Эмч..."></div>
     <div class="input-group"><div class="input-label">Үе</div><input id="f-ue" class="input-field" placeholder="1" type="number" min="1" max="20"></div>
-    
     <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text2);margin:16px 0 10px;display:flex;align-items:center;gap:8px">🎓 Боловсрол<div style="flex:1;height:1px;background:linear-gradient(90deg,rgba(0,255,136,0.2),transparent)"></div></div>
-    <div class="edu-block"><div class="edu-block-title">Бага сургууль</div><input id="edu-baga-name" class="input-field" placeholder="Сургуулийн нэр" style="margin-bottom:8px"><div style="display:flex;gap:8px"><input id="edu-baga-year" class="input-field" placeholder="Он" type="number" style="flex:1"><select id="edu-baga-status" class="input-field" style="flex:1"><option value="">Төлөв</option><option>Төгссөн</option><option>Тасалдсан</option><option>Суралцаж байгаа</option></select></div></div>
-    <div class="edu-block"><div class="edu-block-title">Дунд сургууль</div><input id="edu-dund-name" class="input-field" placeholder="Сургуулийн нэр" style="margin-bottom:8px"><div style="display:flex;gap:8px"><input id="edu-dund-year" class="input-field" placeholder="Он" type="number" style="flex:1"><select id="edu-dund-status" class="input-field" style="flex:1"><option value="">Төлөв</option><option>Төгссөн</option><option>Тасалдсан</option><option>Суралцаж байгаа</option></select></div></div>
-    <div class="edu-block"><div class="edu-block-title">Ахлах сургууль</div><input id="edu-akh-name" class="input-field" placeholder="Сургуулийн нэр" style="margin-bottom:8px"><div style="display:flex;gap:8px"><input id="edu-akh-year" class="input-field" placeholder="Он" type="number" style="flex:1"><select id="edu-akh-status" class="input-field" style="flex:1"><option value="">Төлөв</option><option>Төгссөн</option><option>Тасалдсан</option><option>Суралцаж байгаа</option></select></div></div>
-    <div class="edu-block"><div class="edu-block-title">Коллеж</div><input id="edu-col-name" class="input-field" placeholder="Коллежийн нэр" style="margin-bottom:8px"><div style="display:flex;gap:8px"><input id="edu-col-year" class="input-field" placeholder="Он" type="number" style="flex:1"><select id="edu-col-status" class="input-field" style="flex:1"><option value="">Төлөв</option><option>Төгссөн</option><option>Тасалдсан</option><option>Суралцаж байгаа</option></select></div></div>
-    <div class="edu-block"><div class="edu-block-title">Дээд сургууль</div><input id="edu-deed-name" class="input-field" placeholder="Их сургуулийн нэр" style="margin-bottom:8px"><div style="display:flex;gap:8px"><input id="edu-deed-year" class="input-field" placeholder="Он" type="number" style="flex:1"><select id="edu-deed-status" class="input-field" style="flex:1"><option value="">Төлөв</option><option>Төгссөн</option><option>Тасалдсан</option><option>Суралцаж байгаа</option></select></div></div>
-    <div class="edu-block"><div class="edu-block-title">Магистр / Доктор</div><input id="edu-mag-name" class="input-field" placeholder="Сургуулийн нэр" style="margin-bottom:8px"><div style="display:flex;gap:8px"><input id="edu-mag-year" class="input-field" placeholder="Он" type="number" style="flex:1"><select id="edu-mag-status" class="input-field" style="flex:1"><option value="">Төлөв</option><option>Төгссөн</option><option>Тасалдсан</option><option>Суралцаж байгаа</option></select></div></div>
-    
-    <div class="input-group" style="margin-top:10px"><div class="input-label">Байршлын координат</div><div style="display:flex;gap:8px"><input id="f-lat" class="input-field" placeholder="Өргөрөг" type="number" step="any"><input id="f-lng" class="input-field" placeholder="Уртраг" type="number" step="any"></div><button class="btn btn-ghost" style="margin-top:7px;font-size:12px" onclick="getCurrentLocation()">📍 GPS байршил авах</button></div>
+    <div class="edu-block"><div class="edu-block-title">📚 Бага сургууль</div><input id="edu-baga-name" class="input-field" placeholder="Сургуулийн нэр" style="margin-bottom:8px"><div style="display:flex;gap:8px"><input id="edu-baga-year" class="input-field" placeholder="Он" type="number" style="flex:1"><select id="edu-baga-status" class="input-field" style="flex:1"><option value="">Төлөв</option><option>Төгссөн</option><option>Тасалдсан</option><option>Суралцаж байгаа</option></select></div></div>
+    <div class="edu-block"><div class="edu-block-title">📖 Дунд сургууль</div><input id="edu-dund-name" class="input-field" placeholder="Сургуулийн нэр" style="margin-bottom:8px"><div style="display:flex;gap:8px"><input id="edu-dund-year" class="input-field" placeholder="Он" type="number" style="flex:1"><select id="edu-dund-status" class="input-field" style="flex:1"><option value="">Төлөв</option><option>Төгссөн</option><option>Тасалдсан</option><option>Суралцаж байгаа</option></select></div></div>
+    <div class="edu-block"><div class="edu-block-title">🏫 Ахлах сургууль</div><input id="edu-akh-name" class="input-field" placeholder="Сургуулийн нэр" style="margin-bottom:8px"><div style="display:flex;gap:8px"><input id="edu-akh-year" class="input-field" placeholder="Он" type="number" style="flex:1"><select id="edu-akh-status" class="input-field" style="flex:1"><option value="">Төлөв</option><option>Төгссөн</option><option>Тасалдсан</option><option>Суралцаж байгаа</option></select></div></div>
+    <div class="edu-block"><div class="edu-block-title">🏛️ Коллеж</div><input id="edu-col-name" class="input-field" placeholder="Коллежийн нэр" style="margin-bottom:8px"><div style="display:flex;gap:8px"><input id="edu-col-year" class="input-field" placeholder="Он" type="number" style="flex:1"><select id="edu-col-status" class="input-field" style="flex:1"><option value="">Төлөв</option><option>Төгссөн</option><option>Тасалдсан</option><option>Суралцаж байгаа</option></select></div></div>
+    <div class="edu-block"><div class="edu-block-title">🎓 Дээд сургууль / Их сургууль</div><input id="edu-deed-name" class="input-field" placeholder="Их сургуулийн нэр" style="margin-bottom:8px"><div style="display:flex;gap:8px"><input id="edu-deed-year" class="input-field" placeholder="Он" type="number" style="flex:1"><select id="edu-deed-status" class="input-field" style="flex:1"><option value="">Төлөв</option><option>Төгссөн</option><option>Тасалдсан</option><option>Суралцаж байгаа</option></select></div></div>
+    <div class="edu-block"><div class="edu-block-title">📜 Бакалавр</div><input id="edu-bak-name" class="input-field" placeholder="Сургуулийн нэр" style="margin-bottom:8px"><div style="display:flex;gap:8px"><input id="edu-bak-year" class="input-field" placeholder="Он" type="number" style="flex:1"><select id="edu-bak-status" class="input-field" style="flex:1"><option value="">Төлөв</option><option>Төгссөн</option><option>Тасалдсан</option><option>Суралцаж байгаа</option></select></div></div>
+    <div class="edu-block"><div class="edu-block-title">🏆 Магистр</div><input id="edu-mag-name" class="input-field" placeholder="Сургуулийн нэр" style="margin-bottom:8px"><div style="display:flex;gap:8px"><input id="edu-mag-year" class="input-field" placeholder="Он" type="number" style="flex:1"><select id="edu-mag-status" class="input-field" style="flex:1"><option value="">Төлөв</option><option>Төгссөн</option><option>Тасалдсан</option><option>Суралцаж байгаа</option></select></div></div>
+    <div class="edu-block"><div class="edu-block-title">🔬 Доктор (PhD)</div><input id="edu-doc-name" class="input-field" placeholder="Судалгааны байгууллага" style="margin-bottom:8px"><div style="display:flex;gap:8px"><input id="edu-doc-year" class="input-field" placeholder="Он" type="number" style="flex:1"><select id="edu-doc-status" class="input-field" style="flex:1"><option value="">Төлөв</option><option>Төгссөн</option><option>Тасалдсан</option><option>Суралцаж байгаа</option></select></div></div>
+    <div class="input-group" style="margin-top:10px"><div class="input-label">GPS байршил</div><div style="display:flex;gap:8px"><input id="f-lat" class="input-field" placeholder="Өргөрөг" type="number" step="any"><input id="f-lng" class="input-field" placeholder="Уртраг" type="number" step="any"></div><button class="btn btn-ghost" style="margin-top:7px;font-size:12px" onclick="getCurrentLocation()">📍 GPS байршил авах</button></div>
     <div class="input-group"><div class="input-label">Нэмэлт мэдээлэл</div><textarea id="f-bio" class="input-field" rows="3" placeholder="Тайлбар..."></textarea></div>
     <div style="display:flex;gap:9px;margin-top:6px"><button class="btn btn-ghost" onclick="closeModal('form-modal')" style="flex:1">Болих</button><button class="btn btn-neon" id="form-submit-btn" onclick="submitForm()" style="flex:2">✓ Хадгалах</button></div>
   </div>
 </div>
 
+<!-- PROFILE EDIT MODAL -->
 <div class="modal-overlay" id="profile-edit-modal">
   <div class="modal-sheet">
     <div class="modal-handle" onclick="closeModal('profile-edit-modal')"></div>
     <div class="modal-title">Профайл засах</div>
-    <div style="margin-bottom:14px"><div class="photo-upload-area" onclick="document.getElementById('pedit-photo-input').click()"><img id="pedit-photo-preview" class="photo-preview" src="" alt="" style="display:none"><svg id="pedit-photo-icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#3a5248" stroke-width="1.5" style="display:block;margin:0 auto 8px"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg><p style="color:var(--text2);font-size:13px" id="pedit-photo-text">Зураг сонгох</p></div><input type="file" id="pedit-photo-input" accept="image/*" style="display:none" onchange="previewPeditPhoto(this)"></div>
+    <div style="margin-bottom:14px;position:relative">
+      <div class="photo-upload-area" onclick="document.getElementById('pedit-photo-input').click()">
+        <img id="pedit-photo-preview" class="photo-preview" src="" alt="" style="display:none">
+        <svg id="pedit-photo-icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#3a5248" stroke-width="1.5" style="display:block;margin:0 auto 8px"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        <p style="color:var(--text2);font-size:13px" id="pedit-photo-text">Зураг сонгох</p>
+      </div>
+      <button class="photo-remove-btn" id="pedit-remove-btn" onclick="removePeditPhoto(event)">✕</button>
+      <input type="file" id="pedit-photo-input" accept="image/*" style="display:none" onchange="previewPeditPhoto(this)">
+    </div>
     <div class="input-group"><div class="input-label">Одоо суугаа газар</div><input id="pe-lives" class="input-field" placeholder="Токио, Япон"></div>
     <div class="input-group"><div class="input-label">Мэргэжил</div><input id="pe-job" class="input-field" placeholder="Инженер..."></div>
     <div class="input-group"><div class="input-label">Нэмэлт мэдээлэл</div><textarea id="pe-bio" class="input-field" rows="3" placeholder="Тайлбар..."></textarea></div>
@@ -306,34 +395,31 @@ select.input-field option{background:var(--bg2)}
   </div>
 </div>
 
+<!-- CONFIRM DIALOG -->
+<div class="confirm-overlay" id="confirm-overlay">
+  <div class="confirm-box">
+    <div class="confirm-title" id="confirm-title">Устгах уу?</div>
+    <div class="confirm-msg" id="confirm-msg">Энэ үйлдлийг буцаах боломжгүй.</div>
+    <div class="confirm-btns">
+      <button class="btn btn-ghost" style="flex:1;padding:11px" onclick="closeConfirm()">Болих</button>
+      <button class="btn btn-danger" style="flex:1;padding:11px" id="confirm-ok-btn">Устгах</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY&callback=initMap"></script>
+
 <script>
-let currentUser=null,isAdmin=false,allMembers=[],allPosts=[],editingKey=null,selectedPhotoFile=null,selectedPeditFile=null,selectedPostFile=null;
+'use strict';
+let currentUser=null,currentEmail=null,isAdmin=false,allMembers=[],allPosts=[],editingKey=null,selectedPhotoFile=null,selectedPhotoRemoved=false,selectedPeditFile=null,selectedPeditRemoved=false,selectedPostFile=null;
 let treeScale=1,treeOffsetX=0,treeOffsetY=0,treeDragging=false,treeDragStart={x:0,y:0};
+let gmap=null,gmapMarkers=[];
+let confirmCallback=null;
 
-function safeKey(s){return s.replace(/[.#$\[\]\/\s]/
-function getLocation(){
-  if(!navigator.geolocation){
-    showToast("Location дэмжигдэхгүй","error");
-    return;
-  }
+const EDU_LEVELS=[['baga','Бага'],['dund','Дунд'],['akh','Ахлах'],['col','Коллеж'],['deed','Дээд / Их'],['bak','Бакалавр'],['mag','Магистр'],['doc','Доктор']];
 
-  navigator.geolocation.getCurrentPosition(pos=>{
-    const lat=pos.coords.latitude;
-    const lng=pos.coords.longitude;
-
-    currentUser.location={
-      lat:lat,
-      lng:lng,
-      time:Date.now()
-    };
-
-    fbSet('members/'+currentUser.key,currentUser);
-
-    showToast("📍 Байршил хадгалагдлаа");
-  });
-}
 function showRegister(){document.getElementById('auth-login').style.display='none';document.getElementById('auth-register').style.display='block';}
 function showLogin(){document.getElementById('auth-register').style.display='none';document.getElementById('auth-login').style.display='block';}
 
@@ -342,40 +428,64 @@ function togglePw(id,btn){
   btn.querySelector('svg').innerHTML=s?'<line x1="1" y1="1" x2="23" y2="23"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 11 7 11 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 1 12s4 7 11 7a9.74 9.74 0 0 0 5.39-1.61"/>':'<path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/>';
 }
 
-function doLogin(){
-  const id=document.getElementById('login-id').value.trim(),pw=document.getElementById('login-pw').value;
-  if(!id||!pw){showToast('ID болон нууц үгээ оруулна уу','error');return;}
+async function doLogin(){
+  const email=document.getElementById('login-id').value.trim();
+  const pw=document.getElementById('login-pw').value;
+  if(!email||!pw){showToast('И-мэйл болон нууц үгээ оруулна уу','error');return;}
   const btn=document.getElementById('login-btn');btn.innerHTML='<div class="spinner"></div>';btn.disabled=true;
-  fbGet('users/'+safeKey(id)).then(u=>{
-    if(!u){showToast('Энэ ID бүртгэлгүй','error');return;}
-    if(u.pw!==btoa(unescape(encodeURIComponent(pw)))){showToast('Нууц үг буруу','error');return;}
-    loginSuccess(id,u.isAdmin===true);
-  }).catch(e=>showToast('Алдаа: '+e.message,'error'))
-  .finally(()=>{btn.innerHTML='Нэвтрэх';btn.disabled=false;});
+  try{
+    const d=await fbAuthReq('signInWithPassword',{email,password:pw,returnSecureToken:true});
+    fbToken=d.idToken;fbUID=d.localId;currentEmail=email;
+    let adminData=null;try{adminData=await fbGet('admins/'+fbUID);}catch(e){}
+    isAdmin=!!adminData;
+    loginSuccess(email);
+  }catch(e){showToast(translateAuthError(e.message),'error');}
+  finally{btn.innerHTML='Нэвтрэх';btn.disabled=false;}
 }
 
-function doRegister(){
-  const id=document.getElementById('reg-id').value.trim(),pw=document.getElementById('reg-pw').value,pw2=document.getElementById('reg-pw2').value;
-  if(!id){showToast('ID оруулна уу','error');return;}
+async function doRegister(){
+  const email=document.getElementById('reg-id').value.trim();
+  const pw=document.getElementById('reg-pw').value;
+  const pw2=document.getElementById('reg-pw2').value;
+  if(!email){showToast('И-мэйл оруулна уу','error');return;}
   if(pw.length<6){showToast('Нууц үг 6+ тэмдэгт','error');return;}
   if(pw!==pw2){showToast('Нууц үг таарахгүй','error');return;}
   const btn=document.getElementById('reg-btn');btn.innerHTML='<div class="spinner"></div>';btn.disabled=true;
-  const key=safeKey(id);
-  fbGet('users/'+key).then(ex=>{
-    if(ex){showToast('Энэ ID аль хэдийн бүртгэлтэй','error');return;}
-    return fbSet('users/'+key,{pw:btoa(unescape(encodeURIComponent(pw))),isAdmin:id.toLowerCase()==='admin',createdAt:Date.now()})
-      .then(()=>{showToast('Бүртгэл амжилттай!','success');document.getElementById('login-id').value=id;showLogin();});
-  }).catch(e=>showToast('Алдаа: '+e.message,'error'))
-  .finally(()=>{btn.innerHTML='Бүртгүүлэх';btn.disabled=false;});
+  try{
+    const d=await fbAuthReq('signUp',{email,password:pw,returnSecureToken:true});
+    fbToken=d.idToken;fbUID=d.localId;
+    await fbSet('users/'+fbUID,{email,createdAt:Date.now()});
+    showToast('Бүртгэл амжилттай! Нэвтэрнэ үү.','success');
+    document.getElementById('login-id').value=email;
+    showLogin();
+  }catch(e){showToast(translateAuthError(e.message),'error');}
+  finally{btn.innerHTML='Бүртгүүлэх';btn.disabled=false;}
 }
 
-function loginSuccess(id,admin){
-  currentUser=id;isAdmin=admin;
+function translateAuthError(msg){
+  if(msg.includes('EMAIL_NOT_FOUND')||msg.includes('INVALID_LOGIN_CREDENTIALS')||msg.includes('INVALID_EMAIL'))return 'ID эсвэл нууц код буруу байна';
+  if(msg.includes('WRONG_PASSWORD'))return 'Нууц код буруу байна';
+  if(msg.includes('EMAIL_EXISTS'))return 'Энэ ID аль хэдийн бүртгэлтэй байна';
+  if(msg.includes('TOO_MANY_ATTEMPTS'))return 'Хэт олон оролдлого хийлээ. Түр хүлээнэ үү';
+  if(msg.includes('WEAK_PASSWORD'))return 'Нууц код 6+ тэмдэгт байх ёстой';
+  if(msg.includes('USER_NOT_FOUND'))return 'Энэ ID бүртгэлгүй байна';
+  return 'Алдаа гарлаа. Дахин оролдоно уу';
+}
+
+}
+
+function loginSuccess(email){
+  currentUser=email;
   document.getElementById('login-page').style.display='none';
   document.getElementById('bottom-nav').style.display='flex';
-  document.getElementById('home-greeting').textContent='Сайн байна уу, '+id;
+  document.getElementById('home-greeting').textContent='Сайн байна уу, '+email.split('@')[0];
   if(isAdmin){document.getElementById('admin-badge').style.display='flex';document.getElementById('fab-add').classList.remove('hidden');}
   loadAllMembers();loadPosts();
+  setInterval(refreshToken,55*60*1000);
+}
+
+async function refreshToken(){
+  try{await fbAuthReq('signInWithPassword',{email:currentEmail,password:'__skip__',returnSecureToken:true});}catch(e){}
 }
 
 document.getElementById('login-pw').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
@@ -383,50 +493,37 @@ document.getElementById('login-pw').addEventListener('keydown',e=>{if(e.key==='E
 function goPage(page,el){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
-  document.getElementById('page-'+page).classList.add('active');el.classList.add('active');
+  document.getElementById('page-'+page).classList.add('active');
+  el.classList.add('active');
   if(page==='tree')setTimeout(()=>renderFamilyTree(),100);
   if(page==='profile')renderMyProfile();
+  if(page==='map')setTimeout(()=>renderMap(),200);
 }
 
+function canEditMember(m){return isAdmin||(m&&m.createdBy===fbUID);}
+function canDeleteMember(){return isAdmin;}
+
 function getRelation(me,other){
-  if(!me||!other||!me.ovog||!other.ovog)return '';
-  if(me.ovog.trim().toLowerCase()!==other.ovog.trim().toLowerCase())return '';
+  if(!me||!other||!me.ovog||!other.ovog)return'';
+  if(me.ovog.trim().toLowerCase()!==other.ovog.trim().toLowerCase())return'';
   const myUe=parseInt(me.ue)||0,otherUe=parseInt(other.ue)||0,diff=otherUe-myUe;
   const isFemale=other.huys==='Эмэгтэй';
-  if(diff===0){
-    const myY=parseInt(me.year)||0,otY=parseInt(other.year)||0;
-    if(!myY||!otY)return isFemale?'Эгч/Дүү':'Ах/Дүү';
-    return otY<myY?(isFemale?'Эгч':'Ах'):'Дүү';
-  }
+  if(diff===0){const myY=parseInt(me.year)||0,otY=parseInt(other.year)||0;if(!myY||!otY)return isFemale?'Эгч/Дүү':'Ах/Дүү';return otY<myY?(isFemale?'Эгч':'Ах'):'Дүү';}
   if(diff===-1)return isFemale?'Ээж':'Аав';
   if(diff===-2)return isFemale?'Эмээ':'Өвөө';
   if(diff<=-3)return isFemale?'Өвгөн эмээ':'Өвгөн өвөө';
   if(diff===1)return isFemale?'Охин':'Хүү';
   if(diff===2)return isFemale?'Ач охин':'Ач хүү';
   if(diff>=3)return isFemale?'Зээ охин':'Зээ хүү';
-  return '';
+  return'';
 }
-
 function calcAge(year){if(!year)return null;return new Date().getFullYear()-parseInt(year);}
-
-function checkBirthdays(){
-  const now=new Date(),todayM=now.getMonth()+1,todayD=now.getDate();
-  const me=allMembers.find(m=>m.createdBy===currentUser);
-  const bdays=allMembers.filter(m=>parseInt(m.month)===todayM&&parseInt(m.day)===todayD);
-  if(!bdays.length){document.getElementById('bday-banner').classList.remove('show');return;}
-  document.getElementById('bday-list').innerHTML=bdays.map(m=>{
-    const rel=me?getRelation(me,m):'';
-    const age=calcAge(m.year);
-    return (rel?'Таны <b>'+rel+'</b> ':'')+(m.ovog||'')+' '+(m.ner||'')+(age?' ('+age+' нас)':'')+'🎉';
-  }).join('<br>');
-  document.getElementById('bday-banner').classList.add('show');
-}
 
 function loadAllMembers(){
   fbGet('members').then(data=>{
     allMembers=data?Object.entries(data).map(([k,v])=>({key:k,...v})):[];
     renderMembers(allMembers);renderRecent();updateStats();renderMyProfile();checkBirthdays();updateComposerAvatar();
-  }).catch(e=>{showToast('Уншихад алдаа','error');});
+  }).catch(()=>showToast('Уншихад алдаа','error'));
 }
 
 function updateStats(){
@@ -436,51 +533,62 @@ function updateStats(){
 }
 
 function memberCardHTML(m){
-  const me=allMembers.find(x=>x.createdBy===currentUser);
+  const me=allMembers.find(x=>x.createdBy===fbUID);
   const rel=me&&m.key!==me.key?getRelation(me,m):'';
   const age=calcAge(m.year);
   const avt=m.photo?'<img class="member-avatar" src="'+m.photo+'" alt="" loading="lazy">':'<div class="avatar-ph"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#3a5248" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>';
-  return '<div class="card member-card" onclick="openDetail(\''+m.key+'\')">'+avt+'<div class="member-info"><div class="member-name">'+(m.ovog||'')+' '+(m.ner||'')+'</div><div class="member-meta">'+(m.livesPlace||m.bornPlace||'')+(age?' · '+age+' нас':'')+'</div>'+(rel?'<div class="member-tag">'+rel+'</div>':m.ue?'<div class="member-tag">'+m.ue+'-р үе</div>':'')+'</div><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3a5248" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>';
+  return'<div class="card member-card" onclick="openDetail(\''+m.key+'\')">'+avt+'<div class="member-info"><div class="member-name">'+(m.ovog||'')+' '+(m.ner||'')+'</div><div class="member-meta">'+(m.livesPlace||m.bornPlace||'')+(age?' · '+age+' нас':'')+'</div>'+(rel?'<div class="member-tag">'+rel+'</div>':m.ue?'<div class="member-tag">'+m.ue+'-р үе</div>':'')+'</div><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3a5248" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>';
 }
 
 function renderMembers(list){document.getElementById('members-list').innerHTML=list.length?list.map(memberCardHTML).join(''):'<div class="empty-state">👥<br>Гишүүн олдсонгүй</div>';}
 function renderRecent(){document.getElementById('recent-list').innerHTML=[...allMembers].reverse().slice(0,5).map(memberCardHTML).join('')||'<div class="empty-state">Гишүүн байхгүй.</div>';}
 function filterMembers(q){const f=q.toLowerCase();renderMembers(allMembers.filter(m=>(m.ovog+' '+m.ner).toLowerCase().includes(f)||(m.livesPlace||'').toLowerCase().includes(f)||(m.bornPlace||'').toLowerCase().includes(f)));}
 
+function checkBirthdays(){
+  const now=new Date(),todayM=now.getMonth()+1,todayD=now.getDate();
+  const me=allMembers.find(m=>m.createdBy===fbUID);
+  const bdays=allMembers.filter(m=>parseInt(m.month)===todayM&&parseInt(m.day)===todayD);
+  if(!bdays.length){document.getElementById('bday-banner').classList.remove('show');return;}
+  document.getElementById('bday-list').innerHTML=bdays.map(m=>{const rel=me?getRelation(me,m):'';const age=calcAge(m.year);return(rel?'Таны <b>'+rel+'</b> ':'')+m.ovog+' '+m.ner+(age?' ('+age+' нас)':'')+'🎉';}).join('<br>');
+  document.getElementById('bday-banner').classList.add('show');
+}
+
 function openDetail(key){
   const m=allMembers.find(x=>x.key===key);if(!m)return;
-  const me=allMembers.find(x=>x.createdBy===currentUser);
+  const me=allMembers.find(x=>x.createdBy===fbUID);
   const rel=me&&m.key!==me.key?getRelation(me,m):'';
   const age=calcAge(m.year);
   const avt=m.photo?'<img class="detail-avatar" src="'+m.photo+'" alt="">':'';
   const bdayStr=m.month&&m.day?m.month+'-р сарын '+m.day:'';
   const rows=[['Төрсөн он',m.year?(m.year+(bdayStr?' · '+bdayStr:'')+(age?' ('+age+' нас)':'')):null],['Хүйс',m.huys],['Төрсөн газар',m.bornPlace],['Өссөн газар',m.raisedPlace],['Одоо суугаа',m.livesPlace],['Мэргэжил',m.job],['Үе',m.ue?m.ue+'-р үе':null],['Тайлбар',m.bio]].filter(r=>r[1]).map(r=>'<div class="detail-row"><div><div class="detail-key">'+r[0]+'</div><div class="detail-val">'+r[1]+'</div></div></div>').join('');
-  const eduLevels=[['baga','Бага'],['dund','Дунд'],['akh','Ахлах'],['col','Коллеж'],['deed','Дээд'],['mag','Магистр']];
   let eduHtml='';
   if(m.edu){
-    const filled=eduLevels.filter(([k])=>m.edu[k]&&m.edu[k].name);
+    const filled=EDU_LEVELS.filter(([k])=>m.edu[k]&&m.edu[k].name);
     if(filled.length)eduHtml='<div style="margin-top:14px"><div style="font-size:11px;font-weight:700;letter-spacing:1px;color:var(--text2);margin-bottom:8px;text-transform:uppercase">🎓 Боловсрол</div><div class="edu-grid">'+filled.map(([k,lbl])=>'<div class="edu-card filled"><div class="edu-card-level">'+lbl+'</div><div class="edu-card-name">'+m.edu[k].name+'</div>'+(m.edu[k].year?'<div class="edu-card-year">'+m.edu[k].year+'</div>':'')+(m.edu[k].status?'<div class="edu-card-badge">'+m.edu[k].status+'</div>':'')+'</div>').join('')+'</div></div>';
   }
-  document.getElementById('detail-content').innerHTML=avt+'<div class="detail-name">'+(m.ovog||'')+' '+(m.ner||'')+'</div><div style="text-align:center;margin-bottom:14px">'+(rel?'<span style="display:inline-flex;font-size:12px;background:rgba(0,229,255,0.08);border:1px solid rgba(0,229,255,0.2);border-radius:20px;padding:3px 10px;color:var(--neon2)">'+rel+'</span>':'')+'</div><div>'+rows+'</div>'+eduHtml+(isAdmin?'<div style="display:flex;gap:9px;margin-top:16px"><button class="btn btn-ghost" style="flex:1" onclick="closeModal(\'detail-modal\');openEditModal(\''+key+'\')">✏️ Засах</button><button class="btn btn-danger" style="flex:1" onclick="deleteMember(\''+key+'\')">🗑 Устгах</button></div>':'');
+  const canEdit=canEditMember(m);
+  const canDel=canDeleteMember();
+  const btns=canEdit||canDel?'<div style="display:flex;gap:9px;margin-top:16px">'+(canEdit?'<button class="btn btn-ghost" style="flex:1" onclick="closeModal(\'detail-modal\');openEditModal(\''+key+'\')">✏️ Засах</button>':'')+(canDel?'<button class="btn btn-danger" style="flex:1" onclick="confirmDeleteMember(\''+key+'\')">🗑 Устгах</button>':'')+'</div>':'';
+  document.getElementById('detail-content').innerHTML=avt+'<div class="detail-name">'+(m.ovog||'')+' '+(m.ner||'')+'</div><div style="text-align:center;margin-bottom:14px">'+(rel?'<span style="display:inline-flex;font-size:12px;background:rgba(0,229,255,0.08);border:1px solid rgba(0,229,255,0.2);border-radius:20px;padding:3px 10px;color:var(--neon2)">'+rel+'</span>':'')+'</div><div>'+rows+'</div>'+eduHtml+btns;
   openModal('detail-modal');
 }
 
 function openAddModal(){
   if(!isAdmin){showToast('Зөвхөн админ нэмэх боломжтой','error');return;}
-  editingKey=null;selectedPhotoFile=null;
+  editingKey=null;selectedPhotoFile=null;selectedPhotoRemoved=false;
   document.getElementById('form-modal-title').textContent='Гишүүн нэмэх';
   ['f-ovog','f-ner','f-born-place','f-raised-place','f-lives-place','f-job','f-bio','f-lat','f-lng'].forEach(id=>document.getElementById(id).value='');
   ['f-year','f-ue','f-day'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('f-huys').value='';document.getElementById('f-month').value='';
-  ['baga','dund','akh','col','deed','mag'].forEach(k=>{document.getElementById('edu-'+k+'-name').value='';document.getElementById('edu-'+k+'-year').value='';document.getElementById('edu-'+k+'-status').value='';});
-  document.getElementById('photo-preview-img').style.display='none';document.getElementById('photo-icon').style.display='block';document.getElementById('photo-text').textContent='Зураг сонгох';
+  EDU_LEVELS.forEach(([k])=>{document.getElementById('edu-'+k+'-name').value='';document.getElementById('edu-'+k+'-year').value='';document.getElementById('edu-'+k+'-status').value='';});
+  setFormPhoto(null);
   openModal('form-modal');
 }
 
 function openEditModal(key){
-  if(!isAdmin){showToast('Зөвхөн админ засах боломжтой','error');return;}
   const m=allMembers.find(x=>x.key===key);if(!m)return;
-  editingKey=key;selectedPhotoFile=null;
+  if(!canEditMember(m)){showToast('Засах эрхгүй','error');return;}
+  editingKey=key;selectedPhotoFile=null;selectedPhotoRemoved=false;
   document.getElementById('form-modal-title').textContent='Мэдээлэл засах';
   document.getElementById('f-ovog').value=m.ovog||'';document.getElementById('f-ner').value=m.ner||'';
   document.getElementById('f-huys').value=m.huys||'';document.getElementById('f-year').value=m.year||'';
@@ -488,71 +596,144 @@ function openEditModal(key){
   document.getElementById('f-born-place').value=m.bornPlace||'';document.getElementById('f-raised-place').value=m.raisedPlace||'';
   document.getElementById('f-lives-place').value=m.livesPlace||'';document.getElementById('f-job').value=m.job||'';
   document.getElementById('f-ue').value=m.ue||'';document.getElementById('f-lat').value=m.lat||'';document.getElementById('f-lng').value=m.lng||'';document.getElementById('f-bio').value=m.bio||'';
-  ['baga','dund','akh','col','deed','mag'].forEach(k=>{document.getElementById('edu-'+k+'-name').value=m.edu&&m.edu[k]?m.edu[k].name||'':'';document.getElementById('edu-'+k+'-year').value=m.edu&&m.edu[k]?m.edu[k].year||'':'';document.getElementById('edu-'+k+'-status').value=m.edu&&m.edu[k]?m.edu[k].status||'':'';});
-  if(m.photo){document.getElementById('photo-preview-img').src=m.photo;document.getElementById('photo-preview-img').style.display='block';document.getElementById('photo-icon').style.display='none';document.getElementById('photo-text').textContent='Зураг солих';}
-  else{document.getElementById('photo-preview-img').style.display='none';document.getElementById('photo-icon').style.display='block';document.getElementById('photo-text').textContent='Зураг сонгох';}
+  EDU_LEVELS.forEach(([k])=>{document.getElementById('edu-'+k+'-name').value=m.edu&&m.edu[k]?m.edu[k].name||'':'';document.getElementById('edu-'+k+'-year').value=m.edu&&m.edu[k]?m.edu[k].year||'':'';document.getElementById('edu-'+k+'-status').value=m.edu&&m.edu[k]?m.edu[k].status||'':'';});
+  setFormPhoto(m.photo||null);
   openModal('form-modal');
 }
 
-function previewPhoto(input){const f=input.files[0];if(!f)return;selectedPhotoFile=f;const r=new FileReader();r.onload=e=>{document.getElementById('photo-preview-img').src=e.target.result;document.getElementById('photo-preview-img').style.display='block';document.getElementById('photo-icon').style.display='none';document.getElementById('photo-text').textContent='Зураг солих';};r.readAsDataURL(f);}
+function setFormPhoto(url){
+  const img=document.getElementById('photo-preview-img');
+  const icon=document.getElementById('photo-icon');
+  const txt=document.getElementById('photo-text');
+  const rmBtn=document.getElementById('photo-remove-btn');
+  if(url){img.src=url;img.style.display='block';icon.style.display='none';txt.textContent='Зураг солих';rmBtn.classList.add('show');}
+  else{img.src='';img.style.display='none';icon.style.display='block';txt.textContent='Зураг сонгох';rmBtn.classList.remove('show');}
+}
+
+function previewPhoto(input){
+  const f=input.files[0];if(!f)return;
+  selectedPhotoFile=f;selectedPhotoRemoved=false;
+  const r=new FileReader();r.onload=e=>{setFormPhoto(e.target.result);};r.readAsDataURL(f);
+}
+
+function removeFormPhoto(e){
+  e.stopPropagation();
+  selectedPhotoFile=null;selectedPhotoRemoved=true;
+  setFormPhoto(null);
+  document.getElementById('photo-input').value='';
+}
 
 function submitForm(){
-  if(!isAdmin){showToast('Зөвхөн админ хадгалах боломжтой','error');return;}
   const ner=document.getElementById('f-ner').value.trim();if(!ner){showToast('Нэрийг заавал оруулна уу','error');return;}
+  if(!canEditMember(editingKey?allMembers.find(m=>m.key===editingKey):null)&&!isAdmin){showToast('Засах эрхгүй','error');return;}
   const btn=document.getElementById('form-submit-btn');btn.innerHTML='<div class="spinner"></div>';btn.disabled=true;
   const edu={};
-  ['baga','dund','akh','col','deed','mag'].forEach(k=>{const name=(document.getElementById('edu-'+k+'-name').value||'').trim();if(name)edu[k]={name,year:document.getElementById('edu-'+k+'-year').value||'',status:document.getElementById('edu-'+k+'-status').value||''};});
+  EDU_LEVELS.forEach(([k])=>{const name=(document.getElementById('edu-'+k+'-name').value||'').trim();if(name)edu[k]={name,year:document.getElementById('edu-'+k+'-year').value||'',status:document.getElementById('edu-'+k+'-status').value||''};});
   const doSave=(photoURL)=>{
     const data={ovog:document.getElementById('f-ovog').value.trim(),ner,huys:document.getElementById('f-huys').value,year:document.getElementById('f-year').value,month:document.getElementById('f-month').value,day:document.getElementById('f-day').value,bornPlace:document.getElementById('f-born-place').value.trim(),raisedPlace:document.getElementById('f-raised-place').value.trim(),livesPlace:document.getElementById('f-lives-place').value.trim(),job:document.getElementById('f-job').value.trim(),ue:document.getElementById('f-ue').value,lat:document.getElementById('f-lat').value,lng:document.getElementById('f-lng').value,bio:document.getElementById('f-bio').value.trim(),edu,photo:photoURL,updatedAt:Date.now()};
-    if(editingKey){const ex=allMembers.find(m=>m.key===editingKey);data.createdBy=ex?.createdBy||currentUser;data.createdAt=ex?.createdAt||Date.now();return fbSet('members/'+editingKey,data).then(()=>{showToast('Хадгалагдлаа','success');closeModal('form-modal');loadAllMembers();});}
-    else{data.createdBy=currentUser;data.createdAt=Date.now();return fbPush('members',data).then(()=>{showToast('Нэмэгдлээ','success');closeModal('form-modal');loadAllMembers();});}
+    if(editingKey){const ex=allMembers.find(m=>m.key===editingKey);data.createdBy=ex?.createdBy||fbUID;data.createdAt=ex?.createdAt||Date.now();return fbSet('members/'+editingKey,data).then(()=>{showToast('Хадгалагдлаа','success');closeModal('form-modal');loadAllMembers();});}
+    else{data.createdBy=fbUID;data.createdAt=Date.now();return fbPush('members',data).then(()=>{showToast('Нэмэгдлээ','success');closeModal('form-modal');loadAllMembers();});}
   };
-  (selectedPhotoFile?uploadFile(selectedPhotoFile,'photos'):Promise.resolve(editingKey?(allMembers.find(m=>m.key===editingKey)?.photo||''):''))
-  .then(doSave).catch(e=>showToast('Алдаа: '+e.message,'error')).finally(()=>{btn.innerHTML='✓ Хадгалах';btn.disabled=false;});
+  const existingPhoto=editingKey?(allMembers.find(m=>m.key===editingKey)?.photo||''):'';
+  const photoPromise=selectedPhotoFile?uploadFile(selectedPhotoFile,'photos'):Promise.resolve(selectedPhotoRemoved?'':existingPhoto);
+  photoPromise.then(doSave).catch(e=>showToast('Алдаа: '+e.message,'error')).finally(()=>{btn.innerHTML='✓ Хадгалах';btn.disabled=false;});
 }
 
-function deleteMember(key){
-  if(!isAdmin){showToast('Зөвхөн админ устгах боломжтой','error');return;}
-  if(!confirm('Устгах уу?'))return;
-  fbRemove('members/'+key).then(()=>{closeModal('detail-modal');loadAllMembers();showToast('Устгагдлаа','success');}).catch(()=>showToast('Устгахад алдаа','error'));
+function confirmDeleteMember(key){
+  if(!canDeleteMember()){showToast('Зөвхөн админ устгах боломжтой','error');return;}
+  showConfirm('Гишүүн устгах уу?','Энэ үйлдлийг буцаах боломжгүй.',()=>{
+    fbRemove('members/'+key).then(()=>{closeModal('detail-modal');loadAllMembers();showToast('Устгагдлаа','success');}).catch(()=>showToast('Устгахад алдаа','error'));
+  });
 }
+
+function showConfirm(title,msg,cb){
+  document.getElementById('confirm-title').textContent=title;
+  document.getElementById('confirm-msg').textContent=msg;
+  confirmCallback=cb;
+  document.getElementById('confirm-overlay').classList.add('open');
+}
+function closeConfirm(){document.getElementById('confirm-overlay').classList.remove('open');confirmCallback=null;}
+document.getElementById('confirm-ok-btn').onclick=()=>{if(confirmCallback)confirmCallback();closeConfirm();};
 
 function renderMyProfile(){
-  const me=allMembers.find(m=>m.createdBy===currentUser);
+  const me=allMembers.find(m=>m.createdBy===fbUID);
   const el=document.getElementById('my-profile-content');
   if(!me){el.innerHTML='<div class="empty-state">👤<br>Таны профайл байхгүй байна.<br><small style="color:var(--text2)">Админ таныг нэмэх ёстой.</small></div>';return;}
   const age=calcAge(me.year);const bdayStr=me.month&&me.day?me.month+'-р сар '+me.day:'';
   const avt=me.photo?'<img class="profile-avatar" src="'+me.photo+'" alt="">':'<div class="profile-avatar-ph"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#3a5248" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>';
   const locs=(me.bornPlace?'<div class="location-card born"><div class="location-card-icon">📍</div><div class="location-card-label">Төрсөн газар</div><div class="location-card-value">'+me.bornPlace+'</div></div>':'')+(me.raisedPlace?'<div class="location-card raised"><div class="location-card-icon">🏠</div><div class="location-card-label">Өссөн газар</div><div class="location-card-value">'+me.raisedPlace+'</div></div>':'')+(me.livesPlace?'<div class="location-card lives"><div class="location-card-icon">🌐</div><div class="location-card-label">Одоо суугаа газар</div><div class="location-card-value">'+me.livesPlace+'</div></div>':'');
-  const eduLevels=[['baga','Бага'],['dund','Дунд'],['akh','Ахлах'],['col','Коллеж'],['deed','Дээд'],['mag','Магистр']];
-  const eduCards=eduLevels.map(([k,lbl])=>me.edu&&me.edu[k]&&me.edu[k].name?'<div class="edu-card filled"><div class="edu-card-level">'+lbl+'</div><div class="edu-card-name">'+me.edu[k].name+'</div>'+(me.edu[k].year?'<div class="edu-card-year">'+me.edu[k].year+'</div>':'')+(me.edu[k].status?'<div class="edu-card-badge">'+me.edu[k].status+'</div>':'')+'</div>':'<div class="edu-card"><div class="edu-card-level">'+lbl+'</div><div class="edu-card-empty">—</div></div>').join('');
-  el.innerHTML='<div class="profile-hero"><div class="profile-hero-top"><div class="profile-avatar-wrap">'+avt+(age!==null?'<div class="profile-age-badge">'+age+' нас</div>':'')+'</div><div style="flex:1;min-width:0"><div class="profile-ovog">'+(me.ovog||'')+'</div><div class="profile-ner">'+(me.ner||'')+'</div>'+(me.year?'<div class="profile-born">📅 '+me.year+' онд төрсөн</div>':'')+(bdayStr?'<div class="profile-bday">🎂 '+bdayStr+'</div>':'')+(me.huys?'<div class="profile-gender">'+me.huys+'</div>':'')+(isAdmin?'<span class="badge badge-admin" style="margin-top:6px;display:inline-flex">★ Админ</span>':'')+'</div></div><div style="display:flex;gap:8px"><button class="btn btn-ghost" style="flex:1;padding:10px" onclick="openProfileEditModal()">✏️ Засах</button><button class="btn btn-danger" style="flex:1;padding:10px" onclick="doLogout()">Гарах</button></div></div>'+(me.job?'<div class="profile-section"><div class="profile-section-title">💼 Мэргэжил</div><div class="job-card"><div class="job-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ffb347" stroke-width="1.5"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg></div><div><div class="job-label">Мэргэжил</div><div class="job-value">'+me.job+'</div></div></div></div>':'')+(locs?'<div class="profile-section"><div class="profile-section-title">📍 Газар байршил</div><div class="location-cards">'+locs+'</div></div>':'')+'<div class="profile-section"><div class="profile-section-title">🎓 Боловсрол</div><div class="edu-grid">'+eduCards+'</div></div>'+(me.bio?'<div class="profile-section"><div class="profile-section-title">📝 Тэмдэглэл</div><div class="card" style="margin:0"><div style="font-size:14px;color:var(--text);line-height:1.6">'+me.bio+'</div></div></div>':'');
+  const eduCards=EDU_LEVELS.map(([k,lbl])=>me.edu&&me.edu[k]&&me.edu[k].name?'<div class="edu-card filled"><div class="edu-card-level">'+lbl+'</div><div class="edu-card-name">'+me.edu[k].name+'</div>'+(me.edu[k].year?'<div class="edu-card-year">'+me.edu[k].year+'</div>':'')+(me.edu[k].status?'<div class="edu-card-badge">'+me.edu[k].status+'</div>':'')+'</div>':'<div class="edu-card"><div class="edu-card-level">'+lbl+'</div><div class="edu-card-empty">—</div></div>').join('');
+  el.innerHTML='<div class="profile-hero"><div class="profile-hero-top"><div class="profile-avatar-wrap">'+avt+(age!==null?'<div class="profile-age-badge">'+age+' нас</div>':'')+'</div><div style="flex:1;min-width:0"><div class="profile-ovog">'+(me.ovog||'')+'</div><div class="profile-ner">'+(me.ner||'')+'</div>'+(me.year?'<div class="profile-born">📅 '+me.year+' онд төрсөн</div>':'')+(bdayStr?'<div class="profile-bday">🎂 '+bdayStr+'</div>':'')+(me.huys?'<div class="profile-gender">'+me.huys+'</div>':'')+(isAdmin?'<span class="badge badge-admin" style="margin-top:6px;display:inline-flex">★ Админ</span>':'')+'</div></div><div style="display:flex;gap:8px"><button class="btn btn-ghost" style="flex:1;padding:10px" onclick="openProfileEditModal()">✏️ Засах</button><button class="btn btn-danger" style="flex:1;padding:10px" onclick="confirmLogout()">Гарах</button></div></div>'+(me.job?'<div class="profile-section"><div class="profile-section-title">💼 Мэргэжил</div><div class="job-card"><div class="job-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ffb347" stroke-width="1.5"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg></div><div><div class="job-label">Мэргэжил</div><div class="job-value">'+me.job+'</div></div></div></div>':'')+(locs?'<div class="profile-section"><div class="profile-section-title">📍 Газар байршил</div><div class="location-cards">'+locs+'</div></div>':'')+'<div class="profile-section"><div class="profile-section-title">🎓 Боловсрол</div><div class="edu-grid">'+eduCards+'</div></div>'+(me.bio?'<div class="profile-section"><div class="profile-section-title">📝 Тэмдэглэл</div><div class="card" style="margin:0"><div style="font-size:14px;color:var(--text);line-height:1.6">'+me.bio+'</div></div></div>':'');
 }
 
+function confirmLogout(){showConfirm('Гарах уу?','Таны хуралдааны мэдээлэл цэвэрлэгдэнэ.',doLogout);}
+
 function openProfileEditModal(){
-  const me=allMembers.find(m=>m.createdBy===currentUser);if(!me)return;
-  selectedPeditFile=null;
-  document.getElementById('pe-lives').value=me.livesPlace||'';document.getElementById('pe-job').value=me.job||'';document.getElementById('pe-bio').value=me.bio||'';
-  if(me.photo){document.getElementById('pedit-photo-preview').src=me.photo;document.getElementById('pedit-photo-preview').style.display='block';document.getElementById('pedit-photo-icon').style.display='none';document.getElementById('pedit-photo-text').textContent='Зураг солих';}
-  else{document.getElementById('pedit-photo-preview').style.display='none';document.getElementById('pedit-photo-icon').style.display='block';document.getElementById('pedit-photo-text').textContent='Зураг сонгох';}
+  const me=allMembers.find(m=>m.createdBy===fbUID);if(!me)return;
+  selectedPeditFile=null;selectedPeditRemoved=false;
+  document.getElementById('pe-lives').value=me.livesPlace||'';
+  document.getElementById('pe-job').value=me.job||'';
+  document.getElementById('pe-bio').value=me.bio||'';
+  if(me.photo){document.getElementById('pedit-photo-preview').src=me.photo;document.getElementById('pedit-photo-preview').style.display='block';document.getElementById('pedit-photo-icon').style.display='none';document.getElementById('pedit-photo-text').textContent='Зураг солих';document.getElementById('pedit-remove-btn').classList.add('show');}
+  else{document.getElementById('pedit-photo-preview').style.display='none';document.getElementById('pedit-photo-icon').style.display='block';document.getElementById('pedit-photo-text').textContent='Зураг сонгох';document.getElementById('pedit-remove-btn').classList.remove('show');}
   openModal('profile-edit-modal');
 }
 
-function previewPeditPhoto(input){const f=input.files[0];if(!f)return;selectedPeditFile=f;const r=new FileReader();r.onload=e=>{document.getElementById('pedit-photo-preview').src=e.target.result;document.getElementById('pedit-photo-preview').style.display='block';document.getElementById('pedit-photo-icon').style.display='none';document.getElementById('pedit-photo-text').textContent='Зураг солих';};r.readAsDataURL(f);}
-
-function submitProfileEdit(){
-  const me=allMembers.find(m=>m.createdBy===currentUser);if(!me)return;
-  const btn=document.getElementById('pedit-submit-btn');btn.innerHTML='<div class="spinner"></div>';btn.disabled=true;
-  const doSave=(photoURL)=>{const updated={...me,livesPlace:document.getElementById('pe-lives').value.trim(),job:document.getElementById('pe-job').value.trim(),bio:document.getElementById('pe-bio').value.trim(),photo:photoURL,updatedAt:Date.now()};delete updated.key;return fbSet('members/'+me.key,updated).then(()=>{showToast('Профайл шинэчлэгдлээ','success');closeModal('profile-edit-modal');loadAllMembers();});};
-  (selectedPeditFile?uploadFile(selectedPeditFile,'photos'):Promise.resolve(me.photo||'')).then(doSave).catch(e=>showToast('Алдаа: '+e.message,'error')).finally(()=>{btn.innerHTML='✓ Хадгалах';btn.disabled=false;});
+function previewPeditPhoto(input){
+  const f=input.files[0];if(!f)return;
+  selectedPeditFile=f;selectedPeditRemoved=false;
+  const r=new FileReader();r.onload=e=>{document.getElementById('pedit-photo-preview').src=e.target.result;document.getElementById('pedit-photo-preview').style.display='block';document.getElementById('pedit-photo-icon').style.display='none';document.getElementById('pedit-photo-text').textContent='Зураг солих';document.getElementById('pedit-remove-btn').classList.add('show');};r.readAsDataURL(f);
 }
 
-function updateComposerAvatar(){const me=allMembers.find(m=>m.createdBy===currentUser);const w=document.getElementById('composer-avatar-wrap');if(!w)return;w.innerHTML=me&&me.photo?'<img src="'+me.photo+'" style="width:38px;height:38px;border-radius:50%;object-fit:cover">':'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3a5248" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>';}
-function previewPostPhoto(input){const f=input.files[0];if(!f)return;selectedPostFile=f;const r=new FileReader();r.onload=e=>{const img=document.getElementById('post-preview-img');img.src=e.target.result;img.style.display='block';};r.readAsDataURL(f);}
+function removePeditPhoto(e){
+  e.stopPropagation();
+  selectedPeditFile=null;selectedPeditRemoved=true;
+  document.getElementById('pedit-photo-preview').style.display='none';
+  document.getElementById('pedit-photo-icon').style.display='block';
+  document.getElementById('pedit-photo-text').textContent='Зураг сонгох';
+  document.getElementById('pedit-remove-btn').classList.remove('show');
+  document.getElementById('pedit-photo-input').value='';
+}
+
+function submitProfileEdit(){
+  const me=allMembers.find(m=>m.createdBy===fbUID);if(!me)return;
+  const btn=document.getElementById('pedit-submit-btn');btn.innerHTML='<div class="spinner"></div>';btn.disabled=true;
+  const doSave=(photoURL)=>{
+    const updated={...me,livesPlace:document.getElementById('pe-lives').value.trim(),job:document.getElementById('pe-job').value.trim(),bio:document.getElementById('pe-bio').value.trim(),photo:photoURL,updatedAt:Date.now()};
+    delete updated.key;
+    return fbSet('members/'+me.key,updated).then(()=>{showToast('Профайл шинэчлэгдлээ','success');closeModal('profile-edit-modal');loadAllMembers();});
+  };
+  const existingPhoto=me.photo||'';
+  const photoPromise=selectedPeditFile?uploadFile(selectedPeditFile,'photos'):Promise.resolve(selectedPeditRemoved?'':existingPhoto);
+  photoPromise.then(doSave).catch(e=>showToast('Алдаа: '+e.message,'error')).finally(()=>{btn.innerHTML='✓ Хадгалах';btn.disabled=false;});
+}
+
+function updateComposerAvatar(){
+  const me=allMembers.find(m=>m.createdBy===fbUID);
+  const w=document.getElementById('composer-avatar-wrap');if(!w)return;
+  w.innerHTML=me&&me.photo?'<img src="'+me.photo+'" style="width:38px;height:38px;border-radius:50%;object-fit:cover">':'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3a5248" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>';
+}
+
+function previewPostPhoto(input){
+  const f=input.files[0];if(!f)return;
+  selectedPostFile=f;
+  const r=new FileReader();r.onload=e=>{const img=document.getElementById('post-preview-img');img.src=e.target.result;document.getElementById('post-preview-wrap').style.display='block';};r.readAsDataURL(f);
+}
+
+function removePostPhoto(){
+  selectedPostFile=null;
+  document.getElementById('post-preview-wrap').style.display='none';
+  document.getElementById('post-preview-img').src='';
+  document.getElementById('post-photo-input').value='';
+}
 
 function submitPost(){
-  const text=document.getElementById('post-text').value.trim();if(!text&&!selectedPostFile){showToast('Текст эсвэл зураг оруулна уу','error');return;}
-  const doPost=(photoURL)=>{const me=allMembers.find(m=>m.createdBy===currentUser);return fbPush('posts',{text,photo:photoURL||'',authorId:currentUser,authorName:me?(me.ovog||'')+' '+(me.ner||''):currentUser,authorPhoto:me?.photo||'',createdAt:Date.now(),likes:{}}).then(()=>{document.getElementById('post-text').value='';document.getElementById('post-preview-img').style.display='none';selectedPostFile=null;document.getElementById('post-photo-input').value='';showToast('Нийтлэгдлээ','success');loadPosts();});};
+  const text=document.getElementById('post-text').value.trim();
+  if(!text&&!selectedPostFile){showToast('Текст эсвэл зураг оруулна уу','error');return;}
+  const doPost=(photoURL)=>{
+    const me=allMembers.find(m=>m.createdBy===fbUID);
+    return fbPush('posts',{text,photo:photoURL||'',authorId:fbUID,authorName:me?(me.ovog||'')+' '+(me.ner||''):currentUser,authorPhoto:me?.photo||'',createdAt:Date.now(),likes:{}}).then(()=>{document.getElementById('post-text').value='';removePostPhoto();showToast('Нийтлэгдлээ','success');loadPosts();});
+  };
   (selectedPostFile?uploadFile(selectedPostFile,'posts'):Promise.resolve('')).then(doPost).catch(e=>showToast('Алдаа: '+e.message,'error'));
 }
 
@@ -562,29 +743,37 @@ function renderFeed(){
   const el=document.getElementById('feed-list');
   if(!allPosts.length){el.innerHTML='<div class="empty-state">📰<br>Нийтлэл байхгүй байна</div>';return;}
   el.innerHTML=allPosts.map(p=>{
-    const me=allMembers.find(m=>m.createdBy===currentUser);const author=allMembers.find(m=>m.createdBy===p.authorId);
-    const rel=me&&author&&author.createdBy!==currentUser?getRelation(me,author):'';
-    const liked=p.likes&&p.likes[safeKey(currentUser)];const likeCount=p.likes?Object.keys(p.likes).length:0;
-    const canDelete=isAdmin||p.authorId===currentUser;
+    const me=allMembers.find(m=>m.createdBy===fbUID);
+    const author=allMembers.find(m=>m.createdBy===p.authorId);
+    const rel=me&&author&&author.createdBy!==fbUID?getRelation(me,author):'';
+    const liked=p.likes&&p.likes[safeKey(fbUID)];const likeCount=p.likes?Object.keys(p.likes).length:0;
+    const canDel=isAdmin||p.authorId===fbUID;
     const avt=p.authorPhoto?'<img class="post-avatar" src="'+p.authorPhoto+'" alt="">':'<div class="post-avatar-ph"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3a5248" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>';
-    return '<div class="post-card"><div class="post-header">'+avt+'<div class="post-meta"><div class="post-author">'+p.authorName+'</div>'+(rel?'<div class="post-relation">'+rel+'</div>':'')+'</div><div class="post-time">'+formatTime(p.createdAt)+'</div></div>'+(p.text?'<div class="post-body">'+p.text+'</div>':'')+(p.photo?'<img class="post-img" src="'+p.photo+'" alt="" onclick="openImgModal(\''+p.photo+'\')">':'')+'<div class="post-footer"><div class="post-action'+(liked?' liked':'')+'" onclick="toggleLike(\''+p.key+'\')"><svg width="15" height="15" viewBox="0 0 24 24" fill="'+(liked?'var(--danger)':'none')+'" stroke="'+(liked?'var(--danger)':'currentColor')+'" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg><span>'+(likeCount||'')+'</span></div>'+(canDelete?'<div class="post-delete" onclick="deletePost(\''+p.key+'\')">Устгах</div>':'')+'</div></div>';
+    return'<div class="post-card"><div class="post-header">'+avt+'<div class="post-meta"><div class="post-author">'+p.authorName+'</div>'+(rel?'<div class="post-relation">'+rel+'</div>':'')+'</div><div class="post-time">'+formatTime(p.createdAt)+'</div></div>'+(p.text?'<div class="post-body">'+escHtml(p.text)+'</div>':'')+(p.photo?'<img class="post-img" src="'+p.photo+'" alt="" onclick="openImgModal(\''+p.photo+'\')">':'')+'<div class="post-footer"><div class="post-action'+(liked?' liked':'')+'" onclick="toggleLike(\''+p.key+'\')"><svg width="15" height="15" viewBox="0 0 24 24" fill="'+(liked?'var(--danger)':'none')+'" stroke="'+(liked?'var(--danger)':'currentColor')+'" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg><span>'+(likeCount||'')+'</span></div>'+(canDel?'<div class="post-delete" onclick="confirmDeletePost(\''+p.key+'\')">Устгах</div>':'')+'</div></div>';
   }).join('');
 }
 
-function toggleLike(postKey){const key=safeKey(currentUser);const post=allPosts.find(p=>p.key===postKey);if(!post)return;(post.likes&&post.likes[key]?fbRemove('posts/'+postKey+'/likes/'+key):fbSet('posts/'+postKey+'/likes/'+key,true)).then(loadPosts);}
-function deletePost(postKey){if(!confirm('Нийтлэл устгах уу?'))return;fbRemove('posts/'+postKey).then(()=>{showToast('Устгагдлаа','success');loadPosts();});}
+function escHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function safeKey(s){return(s||'').replace(/[.#$\[\]\/\s@]/g,'_');}
 
-function formatTime(ts){if(!ts)return '';const d=Date.now()-ts;if(d<60000)return 'Дэнэхэн';if(d<3600000)return Math.floor(d/60000)+' мин';if(d<86400000)return Math.floor(d/3600000)+' цаг';return Math.floor(d/86400000)+' өдөр';}
-
-function openImgModal(src){
-  const o=document.createElement('div');o.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,0.95);z-index:999;display:flex;align-items:center;justify-content:center;cursor:pointer';o.innerHTML='<img src="'+src+'" style="max-width:100%;max-height:100%;object-fit:contain">';o.onclick=()=>o.remove();document.body.appendChild(o);
+function toggleLike(postKey){
+  const key=safeKey(fbUID);
+  const post=allPosts.find(p=>p.key===postKey);if(!post)return;
+  (post.likes&&post.likes[key]?fbRemove('posts/'+postKey+'/likes/'+key):fbSet('posts/'+postKey+'/likes/'+key,true)).then(loadPosts);
 }
 
-function doLogout(){currentUser=null;isAdmin=false;allMembers=[];allPosts=[];document.getElementById('login-page').style.display='flex';document.getElementById('bottom-nav').style.display='none';document.getElementById('fab-add').classList.add('hidden');document.getElementById('admin-badge').style.display='none';document.getElementById('login-id').value='';document.getElementById('login-pw').value='';showLogin();}
+function confirmDeletePost(postKey){
+  showConfirm('Нийтлэл устгах уу?','Энэ үйлдлийг буцаах боломжгүй.',()=>{
+    fbRemove('posts/'+postKey).then(()=>{showToast('Устгагдлаа','success');loadPosts();});
+  });
+}
 
-function getCurrentLocation(){
-  if(!navigator.geolocation){showToast('Байршил дэмжигдэхгүй','error');return;}
-  navigator.geolocation.getCurrentPosition(pos=>{document.getElementById('f-lat').value=pos.coords.latitude.toFixed(6);document.getElementById('f-lng').value=pos.coords.longitude.toFixed(6);showToast('Байршил авагдлаа','success');},()=>showToast('Байршил авах боломжгүй','error'));
+function formatTime(ts){if(!ts)return'';const d=Date.now()-ts;if(d<60000)return'Дэнэхэн';if(d<3600000)return Math.floor(d/60000)+' мин';if(d<86400000)return Math.floor(d/3600000)+' цаг';return Math.floor(d/86400000)+' өдөр';}
+
+function openImgModal(src){
+  const o=document.createElement('div');o.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,0.95);z-index:999;display:flex;align-items:center;justify-content:center;cursor:pointer';
+  o.innerHTML='<img src="'+src+'" style="max-width:100%;max-height:100%;object-fit:contain"><button style="position:absolute;top:16px;right:16px;background:rgba(255,255,255,0.15);border:none;color:#fff;width:36px;height:36px;border-radius:50%;font-size:18px;cursor:pointer">✕</button>';
+  o.onclick=()=>o.remove();document.body.appendChild(o);
 }
 
 function renderFamilyTree(){
@@ -598,7 +787,7 @@ function renderFamilyTree(){
   const th=PY+gens.length*H+R;tw+=PX*2;svg.setAttribute('width',tw);svg.setAttribute('height',th);
   let html='';
   gens.forEach((g,gi)=>{if(!gi)return;const pm=groups[gens[gi-1]],cm=groups[g];if(!pm||!cm)return;const my=pos[pm[0].key].y+(pos[cm[0].key].y-pos[pm[0].key].y)*0.5;pm.forEach(m=>{const p=pos[m.key];html+='<line class="tree-line" x1="'+p.x+'" y1="'+(p.y+R)+'" x2="'+p.x+'" y2="'+my+'"/>';});if(pm.length>1){const xs=pm.map(m=>pos[m.key].x);html+='<line class="tree-line-solid" x1="'+Math.min(...xs)+'" y1="'+my+'" x2="'+Math.max(...xs)+'" y2="'+my+'"/>';}if(cm.length>1){const xs=cm.map(m=>pos[m.key].x);html+='<line class="tree-line-solid" x1="'+Math.min(...xs)+'" y1="'+my+'" x2="'+Math.max(...xs)+'" y2="'+my+'"/>';}cm.forEach(m=>{const p=pos[m.key];html+='<line class="tree-line" x1="'+p.x+'" y1="'+my+'" x2="'+p.x+'" y2="'+(p.y-R)+'"/>';});});
-  allMembers.forEach(m=>{const p=pos[m.key];if(!p)return;const f=m.huys==='Эмэгтэй',ml=m.huys==='Эрэгтэй';const sc=ml?'rgba(0,255,136,0.5)':f?'rgba(255,121,168,0.5)':'rgba(90,114,104,0.4)';const gc=ml?'rgba(0,255,136,0.15)':f?'rgba(255,121,168,0.12)':'rgba(90,114,104,0.1)';const nm=((m.ovog||'')+' '+(m.ner||'')).trim();const sn=nm.length>10?nm.substring(0,10)+'…':nm;html+='<circle cx="'+p.x+'" cy="'+p.y+'" r="'+(R+6)+'" fill="'+gc+'" opacity="0.6"/>';if(m.photo){html+='<defs><clipPath id="c_'+m.key+'"><circle cx="'+p.x+'" cy="'+p.y+'" r="'+R+'"/></clipPath></defs><g class="tree-node" onclick="openDetail(\''+m.key+'\')"><circle cx="'+p.x+'" cy="'+p.y+'" r="'+R+'" fill="#0f1620" stroke="'+sc+'" stroke-width="2"/><image href="'+m.photo+'" x="'+(p.x-R)+'" y="'+(p.y-R)+'" width="'+(R*2)+'" height="'+(R*2)+'" clip-path="url(#c_'+m.key+')" preserveAspectRatio="xMidYMid slice"/><circle cx="'+p.x+'" cy="'+p.y+'" r="'+R+'" fill="none" stroke="'+sc+'" stroke-width="2"/>';}else{html+='<g class="tree-node" onclick="openDetail(\''+m.key+'\')"><circle cx="'+p.x+'" cy="'+p.y+'" r="'+R+'" fill="'+(ml?'#0a2018':f?'#1e0a14':'#0f1620')+'" stroke="'+sc+'" stroke-width="2"/><text x="'+p.x+'" y="'+(p.y+5)+'" text-anchor="middle" font-size="18" font-weight="700" fill="'+(ml?'rgba(0,255,136,0.6)':f?'rgba(255,121,168,0.6)':'rgba(90,114,104,0.5)')+'" font-family="sans-serif">'+(m.ner||'?').charAt(0).toUpperCase()+'</text>';}html+='<text x="'+p.x+'" y="'+(p.y+R+14)+'" text-anchor="middle" font-size="11" font-weight="600" fill="#dff5ec" font-family="sans-serif">'+sn+'</text>';if(m.year)html+='<text x="'+p.x+'" y="'+(p.y+R+25)+'" text-anchor="middle" font-size="9" fill="#5a7268" font-family="sans-serif">'+m.year+'</text>';if(m.ue)html+='<text x="'+p.x+'" y="'+(p.y+R+36)+'" text-anchor="middle" font-size="8" font-weight="700" fill="#00ff88" font-family="sans-serif">'+m.ue+'-р үе</text>';html+='</g>';});
+  allMembers.forEach(m=>{const p=pos[m.key];if(!p)return;const f=m.huys==='Эмэгтэй',ml=m.huys==='Эрэгтэй';const sc=ml?'rgba(0,255,136,0.5)':f?'rgba(255,121,168,0.5)':'rgba(90,114,104,0.4)';const gc=ml?'rgba(0,255,136,0.15)':f?'rgba(255,121,168,0.12)':'rgba(90,114,104,0.1)';const nm=((m.ovog||'')+' '+(m.ner||'')).trim();const sn=nm.length>10?nm.substring(0,10)+'…':nm;html+='<circle cx="'+p.x+'" cy="'+p.y+'" r="'+(R+6)+'" fill="'+gc+'" opacity="0.6"/>';if(m.photo){html+='<defs><clipPath id="c_'+m.key+'"><circle cx="'+p.x+'" cy="'+p.y+'" r="'+R+'"/></clipPath></defs><g class="tree-node" onclick="openDetail(\''+m.key+'\')"><circle cx="'+p.x+'" cy="'+p.y+'" r="'+R+'" fill="#0f1620" stroke="'+sc+'" stroke-width="2"/><image href="'+m.photo+'" x="'+(p.x-R)+'" y="'+(p.y-R)+'" width="'+(R*2)+'" height="'+(R*2)+'" clip-path="url(#c_'+m.key+')" preserveAspectRatio="xMidYMid slice"/><circle cx="'+p.x+'" cy="'+p.y+'" r="'+R+'" fill="none" stroke="'+sc+'" stroke-width="2"/>';}else{html+='<g class="tree-node" onclick="openDetail(\''+m.key+'\')"><circle cx="'+p.x+'" cy="'+p.y+'" r="'+R+'" fill="'+(ml?'#0a2018':f?'#1e0a14':'#0f1620')+'" stroke="'+sc+'" stroke-width="2"/><text x="'+p.x+'" y="'+(p.y+5)+'" text-anchor="middle" font-size="18" font-weight="700" fill="'+(ml?'rgba(0,255,136,0.6)':f?'rgba(255,121,168,0.6)':'rgba(90,114,104,0.5)')+'" font-family="sans-serif">'+(m.ner||'?').charAt(0).toUpperCase()+'</text>';}html+='<text x="'+p.x+'" y="'+(p.y+R+14)+'" text-anchor="middle" font-size="11" font-weight="600" fill="#dff5ec" font-family="sans-serif">'+escHtml(sn)+'</text>';if(m.year)html+='<text x="'+p.x+'" y="'+(p.y+R+25)+'" text-anchor="middle" font-size="9" fill="#5a7268" font-family="sans-serif">'+m.year+'</text>';if(m.ue)html+='<text x="'+p.x+'" y="'+(p.y+R+36)+'" text-anchor="middle" font-size="8" font-weight="700" fill="#00ff88" font-family="sans-serif">'+m.ue+'-р үе</text>';html+='</g>';});
   svg.innerHTML=html;
   document.getElementById('tree-subtitle').textContent=allMembers.length+' гишүүн · '+gens.length+' үе';
   const cw=wrapper.offsetWidth||360;treeOffsetX=Math.max(0,(cw-tw)/2);treeOffsetY=10;treeScale=1;
@@ -607,51 +796,61 @@ function renderFamilyTree(){
 
 function applyTreeTransform(){const s=document.getElementById('tree-svg');s.style.transform='translate('+treeOffsetX+'px,'+treeOffsetY+'px) scale('+treeScale+')';s.style.transformOrigin='0 0';}
 function treeZoom(f){treeScale=Math.min(2.5,Math.max(0.3,treeScale*f));applyTreeTransform();}
-function treeReset(){treeScale=1;const w=document.getElementById('tree-svg-wrapper');treeOffsetX=Math.max(0,(w.offsetWidth-parseFloat(document.getElementById('tree-svg').getAttribute('width')||'360'))/2);treeOffsetY=10;function setupTreeDrag(){
-  const wrapper=document.getElementById('tree-svg-wrapper');
-  const nw=wrapper.cloneNode(true);
-  wrapper.parentNode.replaceChild(nw,wrapper);
+function treeReset(){treeScale=1;const w=document.getElementById('tree-svg-wrapper');treeOffsetX=Math.max(0,(w.offsetWidth-parseFloat(document.getElementById('tree-svg').getAttribute('width')||'360'))/2);treeOffsetY=10;applyTreeTransform();}
 
+function setupTreeDrag(){
+  const wrapper=document.getElementById('tree-svg-wrapper');const nw=wrapper.cloneNode(true);wrapper.parentNode.replaceChild(nw,wrapper);
   let ts=null;
-
-  nw.addEventListener('touchstart',e=>{
-    if(e.touches.length===1){
-      ts={x:e.touches[0].clientX,y:e.touches[0].clientY,ox:treeOffsetX,oy:treeOffsetY};
-    }
-  },{passive:true});
-
-  nw.addEventListener('touchmove',e=>{
-    if(ts&&e.touches.length===1){
-      treeOffsetX=ts.ox+(e.touches[0].clientX-ts.x);
-      treeOffsetY=ts.oy+(e.touches[0].clientY-ts.y);
-      applyTreeTransform();
-    }
-  },{passive:true});
-
+  nw.addEventListener('touchstart',e=>{if(e.touches.length===1)ts={x:e.touches[0].clientX,y:e.touches[0].clientY,ox:treeOffsetX,oy:treeOffsetY};},{passive:true});
+  nw.addEventListener('touchmove',e=>{if(ts&&e.touches.length===1){treeOffsetX=ts.ox+(e.touches[0].clientX-ts.x);treeOffsetY=ts.oy+(e.touches[0].clientY-ts.y);applyTreeTransform();}},{passive:true});
   nw.addEventListener('touchend',()=>{ts=null;});
+  nw.addEventListener('mousedown',e=>{treeDragging=true;treeDragStart={x:e.clientX-treeOffsetX,y:e.clientY-treeOffsetY};});
+  nw.addEventListener('mousemove',e=>{if(!treeDragging)return;treeOffsetX=e.clientX-treeDragStart.x;treeOffsetY=e.clientY-treeDragStart.y;applyTreeTransform();});
+  nw.addEventListener('mouseup',()=>{treeDragging=false;});nw.addEventListener('mouseleave',()=>{treeDragging=false;});
+  nw.addEventListener('wheel',e=>{e.preventDefault();treeZoom(e.deltaY<0?1.1:0.9);},{passive:false});
+}
 
-  nw.addEventListener('mousedown',e=>{
-    treeDragging=true;
-    treeDragStart={
-      x:e.clientX-treeOffsetX,
-      y:e.clientY-treeOffsetY
-    };
+function initMap(){
+  gmap=new google.maps.Map(document.getElementById('gmap'),{
+    center:{lat:47.8864,lng:106.9057},
+    zoom:4,
+    mapTypeId:'roadmap',
+    styles:[{elementType:'geometry',stylers:[{color:'#0a1018'}]},{elementType:'labels.text.fill',stylers:[{color:'#5a7268'}]},{elementType:'labels.text.stroke',stylers:[{color:'#060a0f'}]},{featureType:'water',elementType:'geometry',stylers:[{color:'#0f1620'}]},{featureType:'road',elementType:'geometry',stylers:[{color:'#1a2a20'}]},{featureType:'road',elementType:'labels.text.fill',stylers:[{color:'#3a5248'}]},{featureType:'poi',stylers:[{visibility:'off'}]}]
   });
+}
 
-  nw.addEventListener('mousemove',e=>{
-    if(!treeDragging)return;
-    treeOffsetX=e.clientX-treeDragStart.x;
-    treeOffsetY=e.clientY-treeDragStart.y;
-    applyTreeTransform();
+function renderMap(){
+  if(!gmap){showToast('Газрын зураг ачаалж байна...','success');return;}
+  gmapMarkers.forEach(m=>m.setMap(null));gmapMarkers=[];
+  const me=allMembers.find(m=>m.createdBy===fbUID);
+  allMembers.forEach(m=>{
+    if(!m.lat||!m.lng)return;
+    const lat=parseFloat(m.lat),lng=parseFloat(m.lng);if(isNaN(lat)||isNaN(lng))return;
+    const isMe=me&&m.key===me.key;
+    const marker=new google.maps.Marker({
+      position:{lat,lng},map:gmap,title:(m.ovog||'')+' '+(m.ner||''),
+      icon:{path:google.maps.SymbolPath.CIRCLE,scale:isMe?10:7,fillColor:isMe?'#00e5ff':'#00ff88',fillOpacity:0.9,strokeColor:isMe?'#00e5ff':'#00ff88',strokeWeight:2}
+    });
+    const info=new google.maps.InfoWindow({content:'<div style="background:#0a1018;color:#dff5ec;border-radius:8px;padding:10px;min-width:140px"><b>'+(m.ovog||'')+' '+(m.ner||'')+'</b><br><span style="font-size:12px;color:#5a7268">'+(m.livesPlace||m.bornPlace||'')+' · '+m.ue+'-р үе</span></div>'});
+    marker.addListener('click',()=>{info.open(gmap,marker);});
+    gmapMarkers.push(marker);
   });
+  if(gmapMarkers.length){const b=new google.maps.LatLngBounds();gmapMarkers.forEach(m=>b.extend(m.getPosition()));gmap.fitBounds(b);}
+}
 
-  nw.addEventListener('mouseup',()=>{treeDragging=false;});
-  nw.addEventListener('mouseleave',()=>{treeDragging=false;});
+function getCurrentLocation(){
+  if(!navigator.geolocation){showToast('Байршил дэмжигдэхгүй','error');return;}
+  navigator.geolocation.getCurrentPosition(pos=>{document.getElementById('f-lat').value=pos.coords.latitude.toFixed(6);document.getElementById('f-lng').value=pos.coords.longitude.toFixed(6);showToast('Байршил авагдлаа','success');},()=>showToast('Байршил авах боломжгүй','error'));
+}
 
-  nw.addEventListener('wheel',e=>{
-    e.preventDefault();
-    treeZoom(e.deltaY<0?1.1:0.9);
-  },{passive:false});
+function doLogout(){
+  currentUser=null;currentEmail=null;fbToken=null;fbUID=null;isAdmin=false;allMembers=[];allPosts=[];
+  document.getElementById('login-page').style.display='flex';
+  document.getElementById('bottom-nav').style.display='none';
+  document.getElementById('fab-add').classList.add('hidden');
+  document.getElementById('admin-badge').style.display='none';
+  document.getElementById('login-id').value='';document.getElementById('login-pw').value='';
+  showLogin();
 }
 
 function openModal(id){document.getElementById(id).classList.add('open');}
