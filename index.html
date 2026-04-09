@@ -586,18 +586,51 @@ function renderFamilyTree(){
 
 function applyTreeTransform(){const s=document.getElementById('tree-svg');s.style.transform='translate('+treeOffsetX+'px,'+treeOffsetY+'px) scale('+treeScale+')';s.style.transformOrigin='0 0';}
 function treeZoom(f){treeScale=Math.min(2.5,Math.max(0.3,treeScale*f));applyTreeTransform();}
-function treeReset(){treeScale=1;const w=document.getElementById('tree-svg-wrapper');treeOffsetX=Math.max(0,(w.offsetWidth-parseFloat(document.getElementById('tree-svg').getAttribute('width')||'360'))/2);treeOffsetY=10;applyTreeTransform();}
+function treeReset(){treeScale=1;const w=document.getElementById('tree-svg-wrapper');treeOffsetX=Math.max(0,(w.offsetWidth-parseFloat(document.getElementById('tree-svg').getAttribute('width')||'360'))/2);treeOffsetY=10;function setupTreeDrag(){
+  const wrapper=document.getElementById('tree-svg-wrapper');
+  const nw=wrapper.cloneNode(true);
+  wrapper.parentNode.replaceChild(nw,wrapper);
 
-function setupTreeDrag(){
-  const wrapper=document.getElementById('tree-svg-wrapper');const nw=wrapper.cloneNode(true);wrapper.parentNode.replaceChild(nw,wrapper);
   let ts=null;
-  nw.addEventListener('touchstart',e=>{if(e.touches.length===1)ts={x:e.touches[0].clientX,y:e.touches[0].clientY,ox:treeOffsetX,oy:treeOffsetY};},{passive:true});
-  nw.addEventListener('touchmove',e=>{if(ts&&e.touches.length===1){treeOffsetX=ts.ox+(e.touches[0].clientX-ts.x);treeOffsetY=ts.oy+(e.touches[0].clientY-ts.y);applyTreeTransform();}},{passive:true});
+
+  nw.addEventListener('touchstart',e=>{
+    if(e.touches.length===1){
+      ts={x:e.touches[0].clientX,y:e.touches[0].clientY,ox:treeOffsetX,oy:treeOffsetY};
+    }
+  },{passive:true});
+
+  nw.addEventListener('touchmove',e=>{
+    if(ts&&e.touches.length===1){
+      treeOffsetX=ts.ox+(e.touches[0].clientX-ts.x);
+      treeOffsetY=ts.oy+(e.touches[0].clientY-ts.y);
+      applyTreeTransform();
+    }
+  },{passive:true});
+
   nw.addEventListener('touchend',()=>{ts=null;});
-  nw.addEventListener('mousedown',e=>{treeDragging=true;treeDragStart={x:e.clientX-treeOffsetX,y:e.clientY-treeDragStart.y};});
-  nw.addEventListener('mousemove',e=>{if(!treeDragging)return;treeOffsetX=e.clientX-treeDragStart.x;treeOffsetY=e.clientY-treeDragStart.y;applyTreeTransform();});
-  nw.addEventListener('mouseup',()=>{treeDragging=false;});nw.addEventListener('mouseleave',()=>{treeDragging=false;});
-  nw.addEventListener('wheel',e=>{e.preventDefault();treeZoom(e.deltaY<0?1.1:0.9);},{passive:false});
+
+  nw.addEventListener('mousedown',e=>{
+    treeDragging=true;
+    treeDragStart={
+      x:e.clientX-treeOffsetX,
+      y:e.clientY-treeOffsetY
+    };
+  });
+
+  nw.addEventListener('mousemove',e=>{
+    if(!treeDragging)return;
+    treeOffsetX=e.clientX-treeDragStart.x;
+    treeOffsetY=e.clientY-treeDragStart.y;
+    applyTreeTransform();
+  });
+
+  nw.addEventListener('mouseup',()=>{treeDragging=false;});
+  nw.addEventListener('mouseleave',()=>{treeDragging=false;});
+
+  nw.addEventListener('wheel',e=>{
+    e.preventDefault();
+    treeZoom(e.deltaY<0?1.1:0.9);
+  },{passive:false});
 }
 
 function openModal(id){document.getElementById(id).classList.add('open');}
