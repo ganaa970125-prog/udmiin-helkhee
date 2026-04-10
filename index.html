@@ -457,7 +457,7 @@ function getRegLocation(){
 
 async function doLogin(){
   const rawId=document.getElementById('login-id').value.trim().toLowerCase();
-  const email=rawId+'@udmiin.app';
+  const email=rawId.includes('@')?rawId:rawId+'@udmiin.app';
   const pw=document.getElementById('login-pw').value;
   if(!rawId||!pw){showToast('ID болон нууц үгээ оруулна уу','error');return;}
   const btn=document.getElementById('login-btn');btn.innerHTML='<div class="spinner"></div>';btn.disabled=true;
