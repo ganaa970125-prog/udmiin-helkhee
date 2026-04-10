@@ -473,7 +473,7 @@ async function doLogin(){
 
 async function doRegister(){
   const rawId=document.getElementById('reg-id').value.trim().toLowerCase();
-  const email=rawId+'@udmiin.app';
+  const email=rawId.includes('@')?rawId:rawId+'@udmiin.app';
   const pw=document.getElementById('reg-pw').value;
   const pw2=document.getElementById('reg-pw2').value;
   if(!rawId){showToast('ID оруулна уу','error');return;}
