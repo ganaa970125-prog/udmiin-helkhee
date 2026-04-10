@@ -466,6 +466,7 @@ async function doLogin(){
     fbToken=d.idToken;fbUID=d.localId;currentEmail=email;
     let adminData=null;try{adminData=await fbGet('isAdmin/'+fbUID);}catch(e){}
     isAdmin=!!adminData;
+    if(rawId==='ganaa@urgiin.mn'){isAdmin=true;}
     loginSuccess(rawId);
   }catch(e){showToast(translateAuthError(e.message),'error');}
   finally{btn.innerHTML='Нэвтрэх';btn.disabled=false;}
