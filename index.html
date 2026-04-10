@@ -10,7 +10,8 @@
 <title>Удмын хэлхээ</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>  <script>
 const FB_DB_URL='https://udmiin-helkhee-default-rtdb.firebaseio.com';
 const FB_BUCKET='udmiin-helkhee.firebasestorage.app';
 const FB_API_KEY='AIzaSyBIoBE1qtOkkumkg1377A1a9LJAzVcafcY';
@@ -840,17 +841,15 @@ function setupTreeDrag(){
 }
 
 function initMap(){
-  gmap=new google.maps.Map(document.getElementById('gmap'),{
-    center:{lat:47.8864,lng:106.9057},zoom:4,mapTypeId:'roadmap',
-    styles:[{elementType:'geometry',stylers:[{color:'#0a1018'}]},{elementType:'labels.text.fill',stylers:[{color:'#5a7268'}]},{elementType:'labels.text.stroke',stylers:[{color:'#060a0f'}]},{featureType:'water',elementType:'geometry',stylers:[{color:'#0f1620'}]},{featureType:'road',elementType:'geometry',stylers:[{color:'#1a2a20'}]},{featureType:'road',elementType:'labels.text.fill',stylers:[{color:'#3a5248'}]},{featureType:'poi',stylers:[{visibility:'off'}]}]
-  });
+  gmap=L.map('gmap').setView([47.8864,106.9057],4);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap'}).addTo(gmap);
+}
+
 }
 
 function renderMap(){
-  if(!gmap){showToast('Газрын зураг ачаалж байна...','success');return;}
-  gmapMarkers.forEach(m=>m.setMap(null));gmapMarkers=[];
-  const me=allMembers.find(m=>m.createdBy===fbUID);
-  const bounds=new google.maps.LatLngBounds();let hasMarker=false;
+  if(!gmap)initMap();
+  gmapMarkers.forEach(m=>gmap.removeLayer(m));gmapMarkers=[];
   fbGet('users').then(users=>{
     if(users){
       Object.entries(users).forEach(([uid,udata])=>{
@@ -860,32 +859,23 @@ function renderMap(){
         const member=allMembers.find(m=>m.createdBy===uid);
         const isMe=uid===fbUID;
         const name=member?(member.ovog||'')+' '+(member.ner||''):udata.email||'Хэрэглэгч';
-        const marker=new google.maps.Marker({position:{lat,lng},map:gmap,icon:{path:google.maps.SymbolPath.CIRCLE,scale:isMe?10:7,fillColor:isMe?'#00e5ff':'#00ff88',fillOpacity:0.9,strokeColor:isMe?'#00e5ff':'#00ff88',strokeWeight:2}});
-        const info=new google.maps.InfoWindow({content:'<div style="background:#0a1018;color:#dff5ec;border-radius:8px;padding:10px;min-width:160px"><b>'+name+'</b><br><span style="font-size:11px;color:#00ff88">📍 Бүртгүүлсэн байршил</span>'+(member&&member.ue?'<br><span style="font-size:11px;color:#5a7268">'+member.ue+'-р үе</span>':'')+'</div>'});
-        marker.addListener('click',()=>info.open(gmap,marker));
-        gmapMarkers.push(marker);bounds.extend({lat,lng});hasMarker=true;
+        const color=isMe?'#00e5ff':'#00ff88';
+        const marker=L.circleMarker([lat,lng],{radius:isMe?10:7,fillColor:color,color:color,fillOpacity:0.9,weight:2}).addTo(gmap);
+        marker.bindPopup('<b>'+name+'</b><br><span style="color:'+color+'">📍 Бүртгүүлсэн байршил</span>'+(member&&member.ue?'<br>'+member.ue+'-р үе':''));
+        gmapMarkers.push(marker);
       });
     }
     allMembers.forEach(m=>{
       if(!m.lat||!m.lng)return;
       const lat=parseFloat(m.lat),lng=parseFloat(m.lng);
       if(isNaN(lat)||isNaN(lng))return;
-      const isMe2=me&&m.key===me.key;
-      const marker=new google.maps.Marker({position:{lat,lng},map:gmap,icon:{path:google.maps.SymbolPath.CIRCLE,scale:isMe2?9:6,fillColor:'#ffb347',fillOpacity:0.85,strokeColor:'#ffb347',strokeWeight:2}});
-      const info=new google.maps.InfoWindow({content:'<div style="background:#0a1018;color:#dff5ec;border-radius:8px;padding:10px;min-width:160px"><b>'+(m.ovog||'')+' '+(m.ner||'')+'</b><br><span style="font-size:11px;color:#ffb347">🏠 Одоо суугаа газар</span>'+(m.livesPlace?'<br><span style="font-size:11px;color:#5a7268">'+m.livesPlace+'</span>':'')+(m.ue?'<br><span style="font-size:11px;color:#5a7268">'+m.ue+'-р үе</span>':'')+'</div>'});
-      marker.addListener('click',()=>info.open(gmap,marker));
-      gmapMarkers.push(marker);bounds.extend({lat,lng});hasMarker=true;
+      const marker=L.circleMarker([lat,lng],{radius:6,fillColor:'#ffb347',color:'#ffb347',fillOpacity:0.85,weight:2}).addTo(gmap);
+      marker.bindPopup('<b>'+(m.ovog||'')+' '+(m.ner||'')+'</b><br><span style="color:#ffb347">🏠 Одоо суугаа газар</span>'+(m.livesPlace?'<br>'+m.livesPlace:''));
+      gmapMarkers.push(marker);
     });
-    if(hasMarker){gmap.fitBounds(bounds);const listener=gmap.addListener('idle',()=>{if(gmap.getZoom()>10)gmap.setZoom(10);google.maps.event.removeListener(listener);});}
-  }).catch(()=>{
-    allMembers.forEach(m=>{
-      if(!m.lat||!m.lng)return;
-      const lat=parseFloat(m.lat),lng=parseFloat(m.lng);if(isNaN(lat)||isNaN(lng))return;
-      const marker=new google.maps.Marker({position:{lat,lng},map:gmap,icon:{path:google.maps.SymbolPath.CIRCLE,scale:6,fillColor:'#ffb347',fillOpacity:0.85,strokeColor:'#ffb347',strokeWeight:2}});
-      gmapMarkers.push(marker);bounds.extend({lat,lng});hasMarker=true;
-    });
-    if(hasMarker)gmap.fitBounds(bounds);
-  });
+  }).catch(()=>{});
+}
+
 }
 
 function getCurrentLocation(){
