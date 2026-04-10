@@ -822,7 +822,6 @@ function renderFamilyTree(){
   const cw=wrapper.offsetWidth||360;treeOffsetX=Math.max(0,(cw-tw)/2);treeOffsetY=10;treeScale=1;
   applyTreeTransform();setupTreeDrag();
 }
-
 function applyTreeTransform(){const s=document.getElementById('tree-svg');s.style.transform='translate('+treeOffsetX+'px,'+treeOffsetY+'px) scale('+treeScale+')';s.style.transformOrigin='0 0';}
 function treeZoom(f){treeScale=Math.min(2.5,Math.max(0.3,treeScale*f));applyTreeTransform();}
 function treeReset(){treeScale=1;const w=document.getElementById('tree-svg-wrapper');treeOffsetX=Math.max(0,(w.offsetWidth-parseFloat(document.getElementById('tree-svg').getAttribute('width')||'360'))/2);treeOffsetY=10;applyTreeTransform();}
