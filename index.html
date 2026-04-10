@@ -839,14 +839,10 @@ function setupTreeDrag(){
   nw.addEventListener('mouseup',()=>{treeDragging=false;});nw.addEventListener('mouseleave',()=>{treeDragging=false;});
   nw.addEventListener('wheel',e=>{e.preventDefault();treeZoom(e.deltaY<0?1.1:0.9);},{passive:false});
 }
-
 function initMap(){
   gmap=L.map('gmap').setView([47.8864,106.9057],4);
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap'}).addTo(gmap);
 }
-
-}
-
 function renderMap(){
   if(!gmap)initMap();
   gmapMarkers.forEach(m=>gmap.removeLayer(m));gmapMarkers=[];
@@ -875,9 +871,6 @@ function renderMap(){
     });
   }).catch(()=>{});
 }
-
-}
-
 function getCurrentLocation(){
   if(!navigator.geolocation){showToast('Байршил дэмжигдэхгүй','error');return;}
   navigator.geolocation.getCurrentPosition(pos=>{document.getElementById('f-lat').value=pos.coords.latitude.toFixed(6);document.getElementById('f-lng').value=pos.coords.longitude.toFixed(6);showToast('Байршил авагдлаа','success');},()=>showToast('Байршил авах боломжгүй','error'));
