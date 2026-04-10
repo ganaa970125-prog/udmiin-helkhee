@@ -464,7 +464,7 @@ async function doLogin(){
   try{
     const d=await fbAuthReq('signInWithPassword',{email,password:pw,returnSecureToken:true});
     fbToken=d.idToken;fbUID=d.localId;currentEmail=email;
-    adminData=await fbGet('isAdmin/'+fbUID)
+    let adminData=null;try{adminData=await fbGet('isAdmin/'+fbUID);}catch(e){}
     isAdmin=!!adminData;
     loginSuccess(rawId);
   }catch(e){showToast(translateAuthError(e.message),'error');}
