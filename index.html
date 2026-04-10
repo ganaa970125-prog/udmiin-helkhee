@@ -477,7 +477,7 @@ async function doRegister(){
   const pw=document.getElementById('reg-pw').value;
   const pw2=document.getElementById('reg-pw2').value;
   if(!rawId){showToast('ID оруулна уу','error');return;}
-  if(rawId.length<6||rawId.length>12){showToast('ID 20 тэмдэг байх ёстой','error');return;}
+  if(rawId.length<6||rawId.length>12){showToast('ID 6-50 тэмдэг байх ёстой','error');return;}
   if(!/^[a-z0-9_]+$/.test(rawId)){showToast('ID латин үсэг, тоо, _ байх ёстой','error');return;}
   if(pw.length<6){showToast('Нууц үг 6+ тэмдэгт','error');return;}
   if(pw!==pw2){showToast('Нууц үг таарахгүй','error');return;}
