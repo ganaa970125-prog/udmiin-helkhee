@@ -1131,7 +1131,9 @@ function doLogout(){
   document.getElementById('login-page').style.display='flex';
   document.getElementById('bottom-nav').style.display='none';
   document.getElementById('fab-add').classList.add('hidden');
-  document.getElementById('admin-badge').style.display='none';
+  document.getElementById('admin-
+  document.getElementById('top-bar').classList.remove('show');
+  badge').style.display='none';
   document.getElementById('login-id').value='';document.getElementById('login-pw').value='';
   showLogin();
 }
