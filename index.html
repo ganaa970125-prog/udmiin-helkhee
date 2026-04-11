@@ -53,6 +53,7 @@ async function fbUpdate(p,d){
       URL.revokeObjectURL(url);
     };img.src=url;
   });
+  } 
 async function uploadFile(file,folder){
 file=await compressImage(file);
  const name=encodeURIComponent(folder+'/'+Date.now()+'_'+file.name.replace(/\s/g,'_'));
