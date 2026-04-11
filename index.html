@@ -531,11 +531,18 @@ function loginSuccess(rawId){
   loadAllMembers();loadPosts();
   setInterval(refreshToken,55*60*1000);
 }
-
 async function refreshToken(){
-  try{await fbAuthReq('signInWithPassword',{email:currentEmail,password:'__skip__',returnSecureToken:true});}catch(e){}
+  if(!fbRefreshToken)return;
+  try{
+    const r=await fetch('https://securetoken.googleapis.com/v1/token?key='+FB_API_KEY,{
+      method:'POST',
+      headers:{'Content-Type':'application/x-www-form-urlencoded'},
+      body:'grant_type=refresh_token&refresh_token='+fbRefreshToken
+    });
+    const d=await r.json();
+    if(d.id_token){fbToken=d.id_token;fbRefreshToken=d.refresh_token;}
+  }catch(e){}
 }
-
 document.getElementById('login-pw').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
 
 function goPage(page,el){
