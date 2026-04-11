@@ -792,7 +792,6 @@ function submitPost(){
 }
 
 function loadPosts(){fbGet('posts').then(data=>{allPosts=data?Object.entries(data).map(([k,v])=>({key:k,...v})).reverse():[];renderFeed();}).catch(()=>{});}
-
 function renderFeed(){
   const el=document.getElementById('feed-list');
   if(!allPosts.length){el.innerHTML='<div class="empty-state">📰<br>Нийтлэл байхгүй байна</div>';return;}
@@ -800,12 +799,118 @@ function renderFeed(){
     const me=allMembers.find(m=>m.createdBy===fbUID);
     const author=allMembers.find(m=>m.createdBy===p.authorId);
     const rel=me&&author&&author.createdBy!==fbUID?getRelation(me,author):'';
-    const liked=p.likes&&p.likes[safeKey(fbUID)];const likeCount=p.likes?Object.keys(p.likes).length:0;
+    const liked=p.likes&&p.likes[safeKey(fbUID)];
+    const likeCount=p.likes?Object.keys(p.likes).length:0;
     const canDel=isAdmin||p.authorId===fbUID;
     const avt=p.authorPhoto?'<img class="post-avatar" src="'+p.authorPhoto+'" alt="">':'<div class="post-avatar-ph"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3a5248" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>';
-    return'<div class="post-card"><div class="post-header">'+avt+'<div class="post-meta"><div class="post-author">'+p.authorName+'</div>'+(rel?'<div class="post-relation">'+rel+'</div>':'')+'</div><div class="post-time">'+formatTime(p.createdAt)+'</div></div>'+(p.text?'<div class="post-body">'+escHtml(p.text)+'</div>':'')+(p.photo?'<img class="post-img" src="'+p.photo+'" alt="" onclick="openImgModal(\''+p.photo+'\')">':'')+'<div class="post-footer"><div class="post-action'+(liked?' liked':'')+'" onclick="toggleLike(\''+p.key+'\')"><svg width="15" height="15" viewBox="0 0 24 24" fill="'+(liked?'var(--danger)':'none')+'" stroke="'+(liked?'var(--danger)':'currentColor')+'" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg><span>'+(likeCount||'')+'</span></div>'+(canDel?'<div class="post-delete" onclick="confirmDeletePost(\''+p.key+'\')">Устгах</div>':'')+'</div></div>';
+    return'<div class="post-card" id="post-'+p.key+'">'+
+      '<div class="post-header">'+avt+
+      '<div class="post-meta"><div class="post-author">'+p.authorName+'</div>'+
+      (rel?'<div class="post-relation">'+rel+'</div>':'')+
+      '</div><div class="post-time">'+formatTime(p.createdAt)+'</div></div>'+
+      (p.text?'<div class="post-body">'+escHtml(p.text)+'</div>':'')+
+      (p.photo?'<img class="post-img" src="'+p.photo+'" alt="" onclick="openImgModal(\''+p.photo+'\')">':'')+
+      '<div class="post-footer">'+
+      '<div class="post-action'+(liked?' liked':'')+'" onclick="toggleLike(\''+p.key+'\')">'+
+      '<svg width="15" height="15" viewBox="0 0 24 24" fill="'+(liked?'var(--danger)':'none')+'" stroke="'+(liked?'var(--danger)':'currentColor')+'" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>'+
+      '<span>'+(likeCount||'')+'</span></div>'+
+      '<div class="post-action" onclick="toggleComments(\''+p.key+'\')">'+
+      '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>'+
+      '<span id="ccount-'+p.key+'">0</span></div>'+
+      (canDel?'<div class="post-delete" onclick="confirmDeletePost(\''+p.key+'\')">Устгах</div>':'')+
+      '</div>'+
+      '<div class="comment-section" id="comments-'+p.key+'" style="display:none">'+
+      '<div class="comment-list" id="clist-'+p.key+'"></div>'+
+      '<div class="comment-input-wrap">'+
+      '<input class="comment-input" id="cinput-'+p.key+'" placeholder="Сэтгэгдэл бичих...">'+
+      '<button class="comment-submit" onclick="submitComment(\''+p.key+'\')">➤</button>'+
+      '</div></div>'+
+      '</div>';
   }).join('');
+  allPosts.forEach(p=>loadComments(p.key));
 }
+
+function toggleComments(postKey){
+  const sec=document.getElementById('comments-'+postKey);
+  if(!sec)return;
+  sec.style.display=sec.style.display==='none'?'block':'none';
+}
+
+async function submitComment(postKey){
+  const input=document.getElementById('cinput-'+postKey);
+  const text=input.value.trim();if(!text)return;
+  const me=allMembers.find(m=>m.createdBy===fbUID);
+  await fbPush('posts/'+postKey+'/comments',{
+    text,authorId:fbUID,
+    authorName:me?(me.ovog||'')+' '+(me.ner||''):currentUser,
+    authorPhoto:me?.photo||'',
+    createdAt:Date.now()
+  });
+  input.value='';
+  loadComments(postKey);
+}
+
+async function submitReply(postKey,commentKey){
+  const input=document.getElementById('rinput-'+commentKey);
+  const text=input.value.trim();if(!text)return;
+  const me=allMembers.find(m=>m.createdBy===fbUID);
+  await fbPush('posts/'+postKey+'/comments/'+commentKey+'/replies',{
+    text,authorId:fbUID,
+    authorName:me?(me.ovog||'')+' '+(me.ner||''):currentUser,
+    createdAt:Date.now()
+  });
+  input.value='';
+  document.getElementById('reply-wrap-'+commentKey).style.display='none';
+  loadComments(postKey);
+}
+
+async function loadComments(postKey){
+  try{
+    const data=await fbGet('posts/'+postKey+'/comments');
+    const comments=data?Object.entries(data).map(([k,v])=>({key:k,...v})):[];
+    const countEl=document.getElementById('ccount-'+postKey);
+    if(countEl)countEl.textContent=comments.length||'';
+    const listEl=document.getElementById('clist-'+postKey);
+    if(!listEl)return;
+    listEl.innerHTML=comments.map(c=>{
+      const replies=c.replies?Object.entries(c.replies).map(([k,v])=>({key:k,...v})):[];
+      return'<div class="comment-item">'+
+        '<div class="comment-header">'+
+        (c.authorPhoto?'<img class="comment-avatar" src="'+c.authorPhoto+'" alt="">':'<div class="comment-avatar-ph"></div>')+
+        '<div><div class="comment-author">'+c.authorName+'</div>'+
+        '<div class="comment-time">'+formatTime(c.createdAt)+'</div></div></div>'+
+        '<div class="comment-text">'+escHtml(c.text)+'</div>'+
+        '<div class="comment-actions">'+
+        '<span onclick="toggleReply(\''+c.key+'\')">↩ Хариулах</span>'+
+        (isAdmin||c.authorId===fbUID?'<span onclick="deleteComment(\''+postKey+'\',\''+c.key+'\')" style="color:var(--danger)">Устгах</span>':'')+
+        '</div>'+
+        '<div id="reply-wrap-'+c.key+'" style="display:none" class="reply-input-wrap">'+
+        '<input class="comment-input" id="rinput-'+c.key+'" placeholder="Хариу бичих...">'+
+        '<button class="comment-submit" onclick="submitReply(\''+postKey+'\',\''+c.key+'\')">➤</button>'+
+        '</div>'+
+        (replies.length?'<div class="replies-list">'+replies.map(r=>
+          '<div class="reply-item">'+
+          '<div class="comment-author" style="font-size:12px">'+r.authorName+'</div>'+
+          '<div class="comment-text">'+escHtml(r.text)+'</div>'+
+          '<div class="comment-time">'+formatTime(r.createdAt)+'</div>'+
+          '</div>'
+        ).join('')+'</div>':'')+
+        '</div>';
+    }).join('');
+  }catch(e){}
+}
+
+function toggleReply(commentKey){
+  const w=document.getElementById('reply-wrap-'+commentKey);
+  if(!w)return;
+w.style.display=w.style.display==='none'?'flex':'none';
+}
+
+async function deleteComment(postKey,commentKey){
+  await fbRemove('posts/'+postKey+'/comments/'+commentKey);
+  loadComments(postKey);
+}
+
 
 function escHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 function safeKey(s){return(s||'').replace(/[.#$\[\]\/\s@]/g,'_');}
