@@ -370,7 +370,12 @@ select.input-field option{background:var(--bg2)}
   <div id="my-profile-content"><div class="empty-state"><div class="spinner" style="margin:0 auto 12px"></div></div></div>
 </div>
 <button class="fab hidden" id="fab-add" onclick="openAddModal()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#030f08" stroke-width="2.8"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
-<div class="modal-overlay" id="detail-modal"><div class="modal-sheet"><div class="modal-handle" onclick="closeModal('detail-modal')"></div><button onclick="closeModal('detail-modal')" style="position:absolute;top:14px;right:14px;background:rgba(255,77,109,0.15);border:1px solid rgba(255,77,109,0.3);color:#ff4d6d;width:32px;height:32px;border-radius:50%;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:10">✕</button><div id="detail-content"></div></div></div>
+function memberCardHTML(m){
+  const me=allMembers.find(x=>x.createdBy===fbUID);
+  const rel=me&&m.key!==me.key?getRelation(me,m):'';
+  const age=calcAge(m.year);
+  const avt=m.photo?'<img class="member-avatar" src="'+m.photo+'" alt="" loading="lazy">':'<div class="avatar-ph"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#3a5248" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>';
+  return'<div class="card member-card" onclick="openDetail(\''+m.key+'\')">'+avt+'<div class="member-info"><div class="member-name">'+(m.ovog||'')+' '+(m.ner||'')+'</div><div class="member-meta">'+(m.livesPlace||m.bornPlace||'')+(age?' · '+age+' нас':'')+'</div>'+(rel?'<div class="member-tag">'+rel+'</div>':m.ue?'<div class="member-tag">'+m.ue+'-р үе</div>':'')+'</div><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3a5248" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>';
 <div class="modal-overlay" id="form-modal">
   <div class="modal-sheet">
     <div class="modal-handle" onclick="closeModal('form-modal')"></div>
