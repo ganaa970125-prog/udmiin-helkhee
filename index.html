@@ -564,6 +564,8 @@ function loginSuccess(rawId){
   document.getElementById('bottom-nav').style.display='flex';
   document.getElementById('home-greeting').textContent='Сайн байна уу, '+rawId;
   if(isAdmin){document.getElementById('admin-badge').style.display='flex';}
+  document.getElementById('top-bar').classList.add('show');
+document.getElementById('top-bar-user').textContent=rawId;
   loadAllMembers();loadPosts();
   setInterval(refreshToken,55*60*1000);
 }
