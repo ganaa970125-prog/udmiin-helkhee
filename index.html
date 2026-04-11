@@ -1013,12 +1013,18 @@ async function deleteComment(postKey,commentKey){
 
 function escHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 function safeKey(s){return(s||'').replace(/[.#$\[\]\/\s@]/g,'_');}
-
 function toggleLike(postKey){
   const key=safeKey(fbUID);const post=allPosts.find(p=>p.key===postKey);if(!post)return;
   (post.likes&&post.likes[key]?fbRemove('posts/'+postKey+'/likes/'+key):fbSet('posts/'+postKey+'/likes/'+key,true)).then(loadPosts);
+}function showLikes(postKey){
+  const post=allPosts.find(p=>p.key===postKey);if(!post||!post.likes)return;
+  const names=Object.keys(post.likes).map(uid=>{
+    const m=allMembers.find(x=>x.createdBy===uid.replace(/_/g,'.'));
+    return m?(m.ovog||'')+' '+(m.ner||''):uid;
+  });
+  if(!names.length){showToast('Лайк байхгүй','success');return;}
+  showConfirm('❤️ Лайк дарсан хүмүүс',names.join(', '),()=>{});
 }
-
 function confirmDeletePost(postKey){
   showConfirm('Нийтлэл устгах уу?','Энэ үйлдлийг буцаах боломжгүй.',()=>{
     fbRemove('posts/'+postKey).then(()=>{showToast('Устгагдлаа','success');loadPosts();});
