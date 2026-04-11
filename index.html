@@ -583,12 +583,32 @@ function updateStats(){
   document.getElementById('stat-gen').textContent=[...new Set(allMembers.map(m=>m.ue).filter(Boolean))].length;
   document.getElementById('stat-loc').textContent=allMembers.filter(m=>m.lat&&m.lng).length;
 }
+function getFlag(place){
+  if(!place)return'';
+  const p=place.toLowerCase();
+  if(p.includes('япон')||p.includes('токио')||p.includes('japan')||p.includes('tokyo'))return'🇯🇵';
+  if(p.includes('солонгос')||p.includes('сеул')||p.includes('korea')||p.includes('seoul'))return'🇰🇷';
+  if(p.includes('хятад')||p.includes('бээжин')||p.includes('china')||p.includes('beijing'))return'🇨🇳';
+  if(p.includes('америк')||p.includes('usa')||p.includes('нью йорк'))return'🇺🇸';
+  if(p.includes('герман')||p.includes('germany')||p.includes('берлин'))return'🇩🇪';
+  if(p.includes('австрали')||p.includes('australia'))return'🇦🇺';
+  if(p.includes('англи')||p.includes('лондон')||p.includes('uk')||p.includes('england'))return'🇬🇧';
+  if(p.includes('канад')||p.includes('canada'))return'🇨🇦';
+  if(p.includes('франц')||p.includes('paris')||p.includes('france'))return'🇫🇷';
+  if(p.includes('монгол')||p.includes('улаанбаатар')||p.includes('дархан')||p.includes('эрдэнэт'))return'🇲🇳';
+  return'';
+}
 function memberCardHTML(m){
   const me=allMembers.find(x=>x.createdBy===fbUID);
   const rel=me&&m.key!==me.key?getRelation(me,m):'';
   const age=calcAge(m.year);
   const avt=m.photo?'<img class="member-avatar" src="'+m.photo+'" alt="" loading="lazy">':'<div class="avatar-ph"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#3a5248" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>';
-  return'<div class="card member-card" onclick="openDetail(\''+m.key+'\')">'+avt+'<div class="member-info"><div class="member-name">'+(m.ovog||'')+' '+(m.ner||'')+'</div><div class="member-meta">'+(m.livesPlace||m.bornPlace||'')+(age?' · '+age+' нас':'')+'</div>'+(rel?'<div class="member-tag">'+rel+'</div>':m.ue?'<div class="member-tag">'+m.ue+'-р үе</div>':'')+'</div><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3a5248" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>';
+  const place=m.livesPlace||m.bornPlace||'';
+  const flag=getFlag(place);
+  const placeTxt=place?(flag?flag+' '+place:place):'';
+  return'<div class="card member-card" onclick="openDetail(\''+m.key+'\')">'+avt+'<div class="member-info"><div class="member-name">'+(m.ovog||'')+' '+(m.ner||'')+'</div><div class="member-meta">'+placeTxt+(age?' · '+age+' нас':'')+'</div>'+(rel?'<div class="member-tag">'+rel+'</div>':m.ue?'<div class="member-tag">'+m.ue+'-р үе</div>':'')+'</div><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3a5248" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></div>';
+}
+
 }
 function renderMembers(list){document.getElementById('members-list').innerHTML=list.length?list.map(memberCardHTML).join(''):'<div class="empty-state">👥<br>Гишүүн олдсонгүй</div>';}
 function renderRecent(){document.getElementById('recent-list').innerHTML=[...allMembers].reverse().slice(0,5).map(memberCardHTML).join('')||'<div class="empty-state">Гишүүн байхгүй.</div>';}
