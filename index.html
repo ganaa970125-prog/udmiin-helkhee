@@ -68,8 +68,10 @@ file=await compressImage(file);
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;overscroll-behavior:none}
 ::-webkit-scrollbar{width:3px}::-webkit-scrollbar-thumb{background:rgba(0,255,136,.15);border-radius:2px}
-body::before{content:'';position:fixed;top:-30vh;left:-20vw;width:70vw;height:70vh;background:radial-gradient(ellipse,rgba(0,255,136,0.06) 0%,transparent 70%);pointer-events:none;z-index:0}
-body::after{content:'';position:fixed;bottom:-20vh;right:-20vw;width:60vw;height:60vh;background:radial-gradient(ellipse,rgba(0,229,255,0.05) ttom:calc...
+body::before{content:'';position:fixed;top:-30vh;left:-20vw;width:70vw;height:70vh;background:radial-gradient(ellipse,rgba(0,255,136,0.06) 
+body::after{content:'';position:fixed;bottom:-20vh;right:-20vw;width:60vw;height:60vh;background:radial-gradient(ellipse,rgba(0,229,255,0.05) 0%,transparent 70%);pointer-events:none;z-index:0}
+.page{position:fixed;inset:0;bottom:calc(var(--nav-h) + var(--sb) + 20px);display:none;flex-direction:column;overflow-y:auto;-webkit-overflow-scrolling:touch;z-index:1}
+ackground:radial-gradient(ellipse,rgba(0,229,255,0.05) ttom:calc...
 .page.active{display:flex}
 @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 .page-header{padding:52px 20px 16px;display:flex;align-items:flex-end;justify-content:space-between;position:sticky;top:0;z-index:10;background:linear-gradient(to bottom,var(--bg) 60%,transparent)}
