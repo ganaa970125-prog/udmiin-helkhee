@@ -319,7 +319,16 @@ select.input-field option{background:var(--bg2)}
     </div>
   </div>
 </div>
-
+<div class="top-bar" id="top-bar">
+  <div class="top-bar-logo">Удмын хэлхээ</div>
+  <div class="top-bar-right">
+    <span class="top-bar-user" id="top-bar-user"></span>
+    <button class="top-bar-logout" onclick="confirmLogout()">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      Гарах
+    </button>
+  </div>
+</div>
 <nav class="bottom-nav" id="bottom-nav" style="display:none">
   <div class="nav-item active" onclick="goPage('home',this)"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span>Нүүр</span></div>
   <div class="nav-item" onclick="goPage('feed',this)"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span>Мэдээ</span></div>
