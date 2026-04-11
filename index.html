@@ -548,7 +548,7 @@ function loginSuccess(rawId){
   document.getElementById('login-page').style.display='none';
   document.getElementById('bottom-nav').style.display='flex';
   document.getElementById('home-greeting').textContent='Сайн байна уу, '+rawId;
-  if(isAdmin){document.getElementById('admin-badge').style.display='flex';document.getElementById('fab-add').classList.remove('hidden');}
+  if(isAdmin){document.getElementById('admin-badge').style.display='flex';}
   loadAllMembers();loadPosts();
   setInterval(refreshToken,55*60*1000);
 }
