@@ -500,6 +500,7 @@ async function doRegister(){
   try{
     const d=await fbAuthReq('signUp',{email,password:pw,returnSecureToken:true});
     fbToken=d.idToken;fbUID=d.localId;
+    fbRefreshToken=d.refreshToken;
     const userData={email,userId:rawId,createdAt:Date.now()};
     if(regLat&&regLng){userData.regLat=regLat;userData.regLng=regLng;}
     await fbSet('users/'+fbUID,userData);
