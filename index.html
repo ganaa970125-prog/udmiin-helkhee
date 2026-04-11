@@ -370,7 +370,7 @@ select.input-field option{background:var(--bg2)}
   <div id="my-profile-content"><div class="empty-state"><div class="spinner" style="margin:0 auto 12px"></div></div></div>
 </div>
 <button class="fab hidden" id="fab-add" onclick="openAddModal()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#030f08" stroke-width="2.8"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
-<div class="modal-overlay" id="detail-modal"><div class="modal-sheet"><div class="modal-handle" onclick="closeModal('detail-modal')"></div><div id="detail-content"></div></div></div>
+<div class="modal-overlay" id="detail-modal"><div class="modal-sheet"><div class="modal-handle" onclick="closeModal('detail-modal')"></div><button onclick="closeModal('detail-modal')" style="position:absolute;top:14px;right:14px;background:rgba(255,77,109,0.15);border:1px solid rgba(255,77,109,0.3);color:#ff4d6d;width:32px;height:32px;border-radius:50%;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:10">✕</button><div id="detail-content"></div></div></div>
 <div class="modal-overlay" id="form-modal">
   <div class="modal-sheet">
     <div class="modal-handle" onclick="closeModal('form-modal')"></div>
