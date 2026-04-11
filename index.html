@@ -809,7 +809,6 @@ function submitPost(){
   };
   (selectedPostFile?uploadFile(selectedPostFile,'posts'):Promise.resolve('')).then(doPost).catch(e=>showToast('Алдаа: '+e.message,'error'));
 }
-
 function loadPosts(){fbGet('posts').then(data=>{allPosts=data?Object.entries(data).map(([k,v])=>({key:k,...v})).reverse():[];renderFeed();}).catch(()=>{});}
 function renderFeed(){
   const el=document.getElementById('feed-list');
@@ -848,6 +847,87 @@ function renderFeed(){
   }).join('');
   allPosts.forEach(p=>loadComments(p.key));
 }
+
+function toggleComments(postKey){
+  const sec=document.getElementById('comments-'+postKey);
+  if(!sec)return;
+  sec.style.display=sec.style.display==='none'?'block':'none';
+}
+
+async function submitComment(postKey){
+  const input=document.getElementById('cinput-'+postKey);
+  const text=input.value.trim();if(!text)return;
+  const me=allMembers.find(m=>m.createdBy===fbUID);
+  await fbPush('posts/'+postKey+'/comments',{
+    text,authorId:fbUID,
+    authorName:me?(me.ovog||'')+' '+(me.ner||''):currentUser,
+    authorPhoto:me?.photo||'',
+    createdAt:Date.now()
+  });
+  input.value='';
+  loadComments(postKey);
+}
+
+async function submitReply(postKey,commentKey){
+  const input=document.getElementById('rinput-'+commentKey);
+  const text=input.value.trim();if(!text)return;
+  const me=allMembers.find(m=>m.createdBy===fbUID);
+  await fbPush('posts/'+postKey+'/comments/'+commentKey+'/replies',{
+    text,authorId:fbUID,
+    authorName:me?(me.ovog||'')+' '+(me.ner||''):currentUser,
+    createdAt:Date.now()
+  });
+  input.value='';
+  document.getElementById('reply-wrap-'+commentKey).style.display='none';
+  loadComments(postKey);
+}
+
+async function loadComments(postKey){
+  try{
+    const data=await fbGet('posts/'+postKey+'/comments');
+    const comments=data?Object.entries(data).map(([k,v])=>({key:k,...v})):[];
+    const countEl=document.getElementById('ccount-'+postKey);
+    if(countEl)countEl.textContent=comments.length||'';
+    const listEl=document.getElementById('clist-'+postKey);
+    if(!listEl)return;
+    listEl.innerHTML=comments.map(c=>{
+      const replies=c.replies?Object.entries(c.replies).map(([k,v])=>({key:k,...v})):[];
+      return'<div class="comment-item">'+
+        '<div class="comment-header">'+
+        (c.authorPhoto?'<img class="comment-avatar" src="'+c.authorPhoto+'" alt="">':'<div class="comment-avatar-ph"></div>')+
+        '<div><div class="comment-author">'+c.authorName+'</div>'+
+        '<div class="comment-time">'+formatTime(c.createdAt)+'</div></div></div>'+
+        '<div class="comment-text">'+escHtml(c.text)+'</div>'+
+        '<div class="comment-actions">'+
+        '<span onclick="toggleReply(\''+c.key+'\')">↩ Хариулах</span>'+
+        (isAdmin||c.authorId===fbUID?'<span onclick="deleteComment(\''+postKey+'\',\''+c.key+'\')" style="color:var(--danger)">Устгах</span>':'')+
+        '</div>'+
+        '<div id="reply-wrap-'+c.key+'" style="display:none" class="reply-input-wrap">'+
+        '<input class="comment-input" id="rinput-'+c.key+'" placeholder="Хариу бичих...">'+
+        '<button class="comment-submit" onclick="submitReply(\''+postKey+'\',\''+c.key+'\')">➤</button>'+
+        '</div>'+
+        (replies.length?'<div class="replies-list">'+replies.map(r=>
+          '<div class="reply-item">'+
+          '<div class="comment-author" style="font-size:12px">'+r.authorName+'</div>'+
+          '<div class="comment-text">'+escHtml(r.text)+'</div>'+
+          '<div class="comment-time">'+formatTime(r.createdAt)+'</div>'+
+          '</div>'
+        ).join('')+'</div>':'')+
+        '</div>';
+    }).join('');
+  }catch(e){}
+}
+function toggleReply(commentKey){
+  const w=document.getElementById('reply-wrap-'+commentKey);
+  if(!w)return;
+  w.style.display=w.style.display==='none'?'flex':'none';
+}
+
+async function deleteComment(postKey,commentKey){
+  await fbRemove('posts/'+postKey+'/comments/'+commentKey);
+  loadComments(postKey);
+}
+
 
 function toggleComments(postKey){
   const sec=document.getElementById('comments-'+postKey);
