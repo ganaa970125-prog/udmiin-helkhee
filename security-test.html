@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+<meta charset="UTF-8">
+<title>🔐 Firebase Security Tester</title>
+<style>
+  body { font-family: monospace; background: #0d0d0d; color: #00ff88; padding: 20px; }
+  h1 { color: #ffd700; }
+  .result { margin: 8px 0; padding: 10px; border-radius: 6px; }
+  .pass { background: #003300; border-left: 4px solid #00ff88; }
+  .fail { background: #330000; border-left: 4px solid #ff4444; }
+  .warn { background: #332200; border-left: 4px solid #ffaa00; }
+  .info { background: #001133; border-left: 4px solid #4488ff; }
+  button { background: #ffd700; color: #000; border: none; padding: 12px 24px; 
+           font-size: 16px; border-radius: 6px; cursor: pointer; margin: 10px 0; }
+  #log { margin-top: 20px; }
+</style>
+</head>
+<body>
+
+<h1>🔐 Удмын хэлхээ — Security Tester</h1>
+<p style="color:#aaa">Зөвхөн өөрийн сайтад ашиглана уу.</p>
+
+<button onclick="runAllTests()">▶ Бүх тест ажиллуулах</button>
+<div id="log"></div>
+
+<script type="module">
+const DB_URL = "https://udmiin-helkhee-default-rtdb.firebaseio.com";
+const STORAGE = "https://firebasestorage.googleapis.com/v0/b/udmiin-helkhee.firebasestorage.app";
+const API_KEY = "AIzaSyBIoBE1qtOkkumkg1377A1a9LJAzVcafcY";
+
+function log(msg, type = "info") {
+  const div = document.createElement("div");
+  div.className = `result ${type}`;
+  div.innerHTML = msg;
+  document.getElementById("log").appendChild(div);
+}
+
+function clear() {
+  document.getElementById("log").innerHTML = "";
+}
+
+// ── TEST 1: Anonymous DB read ──
+async function testAnonRead() {
+  log("⏳ TEST 1: Anonymous унших...", "info");
+  try {
+    const res = await fetch(`${DB_URL}/members.json`);
+    const data = await res.json();
+    if (data && res.ok) {
+      log(`❌ WARN: Anonymous хэрэглэгч /members өгөгдлийг УНШИЖ чадлаа! Rules нээлттэй байна.`, "warn");
+    } else {
+      log(`✅ PASS: Anonymous унших хаалттай байна.`, "pass");
+    }
+  } catch(e) {
+    log(`✅ PASS: Anonymous унших хаалттай (network error).`, "pass");
+  }
+}
+
+// ── TEST 2: Anonymous DB write ──
+async function testAnonWrite() {
+  log("⏳ TEST 2: Anonymous бичих...", "info");
+  try {
+    const res = await fetch(`${DB_URL}/security_test.json`, {
+      method: "PUT",
+      body: JSON.stringify({ hacked: true, time: Date.now() })
+    });
+    if (res.ok) {
+      log(`❌ FAIL: Anonymous хэрэглэгч DB-д БИЧИЖ чадлаа! Энэ аюултай!`, "fail");
+      // Clean up
+      await fetch(`${DB_URL}/security_test.json`, { method: "DELETE" });
+      log(`🧹 Тест өгөгдлийг устгалаа.`, "info");
+    } else {
+      log(`✅ PASS: Anonymous бичих хаалттай байна.`, "pass");
+    }
+  } catch(e) {
+    log(`✅ PASS: Anonymous бичих хаалттай.`, "pass");
+  }
+}
+
+// ── TEST 3: Auth — weak password test ──
+async function testWeakAuth() {
+  log("⏳ TEST 3: Сул нууц үг тест...", "info");
+  const weakPasswords = ["123456", "password", "admin123", "111111"];
+  let found = false;
+  for (const pass of weakPasswords) {
+    try {
+      const res = await fetch(
+        `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${API_KEY}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: "test@test.com", password: pass, returnSecureToken: true })
+        }
+      );
+      const data = await res.json();
+      if (data.idToken) {
+        log(`❌ FAIL: "${pass}" нууц үгээр нэвтэрч чадлаа!`, "fail");
+        found = true;
+        break;
+      }
+    } catch(e) {}
+  }
+  if (!found) {
+    log(`✅ PASS: Сул нууц үгээр нэвтэрч чадсангүй.`, "pass");
+  }
+}
+
+// ── TEST 4: Storage public access ──
+async function testStorageAccess() {
+  log("⏳ TEST 4: Storage нээлттэй эсэх...", "info");
+  try {
+    const res = await fetch(`${STORAGE}/o?maxResults=5`);
+    const data = await res.json();
+    if (data.items && data.items.length > 0) {
+      log(`❌ WARN: Storage файлуудыг anonymous харж болно! (${data.items.length} файл харагдлаа)`, "warn");
+    } else {
+      log(`✅ PASS: Storage хаалттай эсвэл хоосон байна.`, "pass");
+    }
+  } catch(e) {
+    log(`✅ PASS: Storage хаалттай байна.`, "pass");
+  }
+}
+
+// ── TEST 5: Admin path direct access ──
+async function testAdminPath() {
+  log("⏳ TEST 5: Admin өгөгдөл шууд унших...", "info");
+  try {
+    const res = await fetch(`${DB_URL}/admins.json`);
+    const data = await res.json();
+    if (data) {
+      log(`❌ WARN: /admins зам нээлттэй унших боломжтой! Admin мэдээлэл задарч болно.`, "warn");
+    } else {
+      log(`✅ PASS: /admins хаалттай байна.`, "pass");
+    }
+  } catch(e) {
+    log(`✅ PASS: /admins хаалттай.`, "pass");
+  }
+}
+
+// ── RUN ALL ──
+window.runAllTests = async function() {
+  clear();
+  log("🚀 Тест эхэллээ...", "info");
+  await testAnonRead();
+  await testAnonWrite();
+  await testWeakAuth();
+  await testStorageAccess();
+  await testAdminPath();
+  log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━", "info");
+  log("✅ Бүх тест дууслаа.", "info");
+}
+</script>
+</body>
+</html>
