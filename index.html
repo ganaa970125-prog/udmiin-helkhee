@@ -481,7 +481,7 @@ async function doLogin(){
     const d=await fbAuthReq('signInWithPassword',{email,password:pw,returnSecureToken:true});
     fbToken=d.idToken;fbUID=d.localId;currentEmail=email;fbRefreshToken=d.refreshToken;
 let 
-adminData=null;try{adminData=await fbGet('isAdmin/'+fbUID);}catch(e){}
+adminData=null;try{adminData=await fbGet('Admins/'+fbUID);}catch(e){}
     isAdmin=!!adminData;
     if(rawId==='ganaa970125@gmail.com'){isAdmin=true;}if(email==='ganaa970125@gmail.com'){await fbSet('admins/'+fbUID,true);}
 loginSuccess(rawId);
