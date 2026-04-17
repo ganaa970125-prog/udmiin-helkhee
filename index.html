@@ -985,6 +985,7 @@ function doLogout(){
   document.getElementById('login-id').value='';document.getElementById('login-pw').value='';
   showLogin();
 }
+document.addEventListener('click',function(e){const c=e.target.closest('[onclick^="openDetail"]');if(c){const k=c.getAttribute('onclick').match(/openDetail\('([^']+)'\)/);if(k)openDetail(k[1]);}});
 function openModal(id){document.getElementById(id).classList.add('open');}
 function closeModal(id){document.getElementById(id).classList.remove('open');}
 document.querySelectorAll('.modal-overlay').forEach(o=>{o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open');});});
