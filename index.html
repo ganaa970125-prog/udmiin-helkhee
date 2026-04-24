@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="mn">
 <head>
 <meta charset="UTF-8">
@@ -1298,6 +1299,7 @@ document.getElementById(‘login-id’).value=’’;document.getElementById(‘
 function openModal(id){document.getElementById(id).classList.add(‘open’);}
 function closeModal(id){document.getElementById(id).classList.remove(‘open’);}
 let toastTimer;
+function showToast(msg,type=‘success’){const t=document.getElementById(‘toast’);t.textContent=msg;t.className=‘toast ‘+type+’ show’;clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove(‘show’),2800);}
 // ── STEP 6: STATS PAGE ────────────────────────────────────────────────────
 function renderStats(){
 const el=document.getElementById(‘stats-content’);if(!el)return;
@@ -1701,5 +1703,6 @@ setTimeout(()=>openGallery(memberKey),500);
 });
 }
 </script>
+
 </body>
 </html>
