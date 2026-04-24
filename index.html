@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="mn">
 <head>
 <meta charset="UTF-8">
@@ -396,7 +397,7 @@ select.input-field option{background:var(--bg2)}
     <div id="auth-login">
       <div class="input-group"><div class="input-label">Хэрэглэгчийн ID</div><input id="login-id" class="input-field" placeholder="" type="text" autocomplete="username"></div>
       <div class="input-group"><div class="input-label">Нууц код</div><div class="pw-wrap"><input id="login-pw" class="input-field" type="password" placeholder="••••••••"><button class="pw-toggle" onclick="togglePw('login-pw',this)" type="button"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg></button></div></div>
-      <button class="btn btn-neon" onclick="doLogin()" id="login-btn">Нэвтрэх</button>
+      <button class="btn btn-neon" id="login-btn">Нэвтрэх</button>
       <div class="auth-toggle">Бүртгэлгүй юу? <span onclick="showRegister()">Бүртгүүлэх</span></div>
     </div>
     <div id="auth-register" style="display:none">
@@ -408,7 +409,7 @@ select.input-field option{background:var(--bg2)}
         <button class="btn btn-ghost" style="font-size:13px;padding:11px" onclick="getRegLocation()" id="reg-loc-btn" type="button">📍 Одоогийн байршил авах</button>
         <div class="reg-location-card" id="reg-location-card"><div style="font-size:20px;flex-shrink:0">✅</div><div style="flex:1;font-size:12px;color:var(--text2);line-height:1.5"><b style="color:var(--neon)">Байршил авагдлаа</b><br><span id="reg-location-text"></span></div></div>
       </div>
-      <button class="btn btn-neon" onclick="doRegister()" id="reg-btn" disabled style="opacity:0.4;cursor:not-allowed">Бүртгүүлэх</button>
+      <button class="btn btn-neon" id="reg-btn" disabled style="opacity:0.4;cursor:not-allowed">Бүртгүүлэх</button>
       <div style="margin-top:14px;background:rgba(0,229,255,0.05);border:1px solid rgba(0,229,255,0.15);border-radius:14px;padding:14px">
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px"><div style="width:8px;height:8px;border-radius:50%;background:#00e5ff;box-shadow:0 0 6px #00e5ff;flex-shrink:0"></div><span style="font-size:11px;font-weight:700;letter-spacing:1px;color:#00e5ff;text-transform:uppercase">🔐 Authentication хамгаалалт</span></div>
         <div style="font-size:11px;color:var(--text2);line-height:1.7;margin-bottom:12px">Энэхүү систем нь <b style="color:var(--text)">Firebase Authentication</b> ашигладаг бөгөөд таны мэдээлэл нууцлагдаж хадгалагдана. Зөвхөн гэр бүлийн гишүүд нэвтрэх эрхтэй.</div>
@@ -686,6 +687,13 @@ const MARRIAGE_STATUS_MN={married:'Гэрлэсэн',divorced:'Салсан',wid
 
 // Show/hide deceased fields - wrapped safely
 document.addEventListener(‘DOMContentLoaded’,function(){
+// Login buttons
+const loginBtn=document.getElementById(‘login-btn’);
+if(loginBtn)loginBtn.addEventListener(‘click’,doLogin);
+const regBtn=document.getElementById(‘reg-btn’);
+if(regBtn)regBtn.addEventListener(‘click’,doRegister);
+const showRegLink=document.querySelector(’.auth-toggle span’);
+// Deceased fields
 const decEl=document.getElementById(‘f-deceased’);
 if(decEl)decEl.addEventListener(‘change’,function(){
 document.getElementById(‘deceased-fields’).style.display=this.value===‘yes’?‘block’:‘none’;
