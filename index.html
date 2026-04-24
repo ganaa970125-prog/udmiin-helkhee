@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="mn">
 <head>
 <meta charset="UTF-8">
@@ -685,9 +686,17 @@ let formSkills=[],formHobbies=[];
 const EDU_LEVELS=[['baga','Бага'],['dund','Дунд'],['akh','Ахлах'],['col','Коллеж'],['deed','Дээд / Их'],['bak','Бакалавр'],['mag','Магистр'],['doc','Доктор']];
 const MARRIAGE_STATUS_MN={married:'Гэрлэсэн',divorced:'Салсан',widowed:'Бэлэвсэн'};
 
-// Show/hide deceased fields
-document.getElementById(‘f-deceased’).addEventListener(‘change’,function(){
+// Show/hide deceased fields - wrapped safely
+document.addEventListener(‘DOMContentLoaded’,function(){
+const decEl=document.getElementById(‘f-deceased’);
+if(decEl)decEl.addEventListener(‘change’,function(){
 document.getElementById(‘deceased-fields’).style.display=this.value===‘yes’?‘block’:‘none’;
+});
+const confirmOk=document.getElementById(‘confirm-ok-btn’);
+if(confirmOk)confirmOk.onclick=()=>{if(confirmCallback)confirmCallback();closeConfirm();};
+document.querySelectorAll(’.modal-overlay’).forEach(o=>{o.addEventListener(‘click’,e=>{if(e.target===o)o.classList.remove(‘open’);});});
+const loginPw=document.getElementById(‘login-pw’);
+if(loginPw)loginPw.addEventListener(‘keydown’,e=>{if(e.key===‘Enter’)doLogin();});
 });
 
 function showRegister(){document.getElementById(‘auth-login’).style.display=‘none’;document.getElementById(‘auth-register’).style.display=‘block’;}
@@ -778,7 +787,6 @@ const r=await fetch(‘https://securetoken.googleapis.com/v1/token?key=’+FB_AP
 const d=await r.json();if(d.id_token){fbToken=d.id_token;fbRefreshToken=d.refresh_token;}
 }catch(e){}
 }
-document.getElementById(‘login-pw’).addEventListener(‘keydown’,e=>{if(e.key===‘Enter’)doLogin();});
 function goPage(page,el){
 document.querySelectorAll(’.page’).forEach(p=>p.classList.remove(‘active’));
 document.querySelectorAll(’.nav-item’).forEach(n=>n.classList.remove(‘active’));
@@ -1067,7 +1075,6 @@ fbRemove(‘members/’+key).then(()=>{closeModal(‘detail-modal’);loadAllMem
 }
 function showConfirm(title,msg,cb){document.getElementById(‘confirm-title’).textContent=title;document.getElementById(‘confirm-msg’).textContent=msg;confirmCallback=cb;document.getElementById(‘confirm-overlay’).classList.add(‘open’);}
 function closeConfirm(){document.getElementById(‘confirm-overlay’).classList.remove(‘open’);confirmCallback=null;}
-document.getElementById(‘confirm-ok-btn’).onclick=()=>{if(confirmCallback)confirmCallback();closeConfirm();};
 function renderMyProfile(){
 const me=allMembers.find(m=>m.createdBy===fbUID);
 const el=document.getElementById(‘my-profile-content’);
@@ -1291,7 +1298,6 @@ document.getElementById(‘login-id’).value=’’;document.getElementById(‘
 }
 function openModal(id){document.getElementById(id).classList.add(‘open’);}
 function closeModal(id){document.getElementById(id).classList.remove(‘open’);}
-document.querySelectorAll(’.modal-overlay’).forEach(o=>{o.addEventListener(‘click’,e=>{if(e.target===o)o.classList.remove(‘open’);});});
 let toastTimer;
 // ── STEP 6: STATS PAGE ────────────────────────────────────────────────────
 function renderStats(){
