@@ -397,7 +397,7 @@ select.input-field option{background:var(--bg2)}
     <div id="auth-login">
       <div class="input-group"><div class="input-label">Хэрэглэгчийн ID</div><input id="login-id" class="input-field" placeholder="" type="text" autocomplete="username"></div>
       <div class="input-group"><div class="input-label">Нууц код</div><div class="pw-wrap"><input id="login-pw" class="input-field" type="password" placeholder="••••••••"><button class="pw-toggle" onclick="togglePw('login-pw',this)" type="button"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg></button></div></div>
-      <button class="btn btn-neon" id="login-btn">Нэвтрэх</button>
+      <button class="btn btn-neon" id="login-btn"onclick="doLogin()">Нэвтрэх</button>
       <div class="auth-toggle">Бүртгэлгүй юу? <span onclick="showRegister()">Бүртгүүлэх</span></div>
     </div>
     <div id="auth-register" style="display:none">
