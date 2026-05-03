@@ -66,7 +66,6 @@ async function uploadFile(file,folder){
 </script>
 <style>
 :root{--bg:#060a0f;--bg2:#0a1018;--bg3:#0f1620;--card:rgba(255,255,255,0.035);--cb:rgba(255,255,255,0.07);--neon:#00ff88;--neon2:#00e5ff;--text:#dff5ec;--text2:#5a7268;--danger:#ff4d6d;--warn:#ffb347;--nav-h:76px;--sb:env(safe-area-inset-bottom,0px)}
-/* STEP 5: Light theme */
 body.light{--bg:#f0f4f0;--bg2:#e8ede8;--bg3:#dce5dc;--card:rgba(0,0,0,0.04);--cb:rgba(0,0,0,0.1);--text:#1a2e1a;--text2:#5a7a5a}
 body.light .bottom-nav{background:rgba(232,237,232,0.95);border-color:rgba(0,180,80,0.2)}
 body.light .modal-sheet{background:var(--bg2)}
@@ -76,12 +75,9 @@ body.light body::before,body.light body::after{display:none}
 body.light .login-card{background:rgba(232,237,232,0.95)}
 body.light .confirm-box{background:var(--bg2)}
 body.light .dm-input-bar{background:var(--bg2)}
-/* Theme toggle button */
 .theme-toggle{width:36px;height:36px;border-radius:50%;background:var(--card);border:1px solid var(--cb);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;transition:all .2s ease}
-/* STEP 5: Offline banner */
 .offline-banner{position:fixed;top:0;left:0;right:0;background:rgba(255,77,109,0.95);color:#fff;font-size:12px;font-weight:700;text-align:center;padding:8px;z-index:1000;display:none;letter-spacing:.5px}
 .offline-banner.show{display:block}
-/* STEP 5: Cache indicator */
 .cache-badge{display:inline-flex;align-items:center;gap:4px;background:rgba(255,179,71,0.1);border:1px solid rgba(255,179,71,0.25);color:var(--warn);border-radius:20px;padding:2px 8px;font-size:10px;font-weight:600}
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;overscroll-behavior:none}
@@ -238,16 +234,13 @@ select.input-field option{background:var(--bg2)}
 .upcoming-bday-title{font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--neon2);margin-bottom:8px}
 .upcoming-bday-item{display:flex;align-items:center;gap:8px;padding:4px 0;font-size:12px;color:var(--text2)}
 .upcoming-bday-days{background:rgba(0,229,255,0.15);color:var(--neon2);border-radius:20px;padding:2px 8px;font-size:10px;font-weight:700;flex-shrink:0}
-/* NEW STEP 2: Marriage card */
 .marriage-card{background:linear-gradient(135deg,rgba(255,121,168,0.08),rgba(255,179,71,0.05));border:1px solid rgba(255,121,168,0.2);border-radius:14px;padding:14px;display:flex;align-items:center;gap:12px;margin-bottom:8px}
 .marriage-icon{width:40px;height:40px;border-radius:12px;background:rgba(255,121,168,0.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px}
 .marriage-label{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#ff79a8;margin-bottom:3px}
 .marriage-value{font-size:14px;font-weight:600;color:var(--text)}
 .marriage-date{font-size:11px;color:var(--text2);margin-top:2px}
-/* NEW STEP 2: Deceased */
 .deceased-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(90,114,104,0.12);border:1px solid rgba(90,114,104,0.25);border-radius:20px;padding:4px 12px;font-size:12px;color:var(--text2);margin-top:6px}
 .deceased-detail-banner{background:rgba(90,114,104,0.08);border:1px solid rgba(90,114,104,0.2);border-radius:12px;padding:12px 14px;display:flex;align-items:center;gap:10px;margin-bottom:14px}
-/* NEW STEP 2: Skills & Hobby */
 .skills-wrap{display:flex;flex-wrap:wrap;gap:7px;margin-top:4px}
 .skill-tag{background:rgba(0,229,255,0.08);border:1px solid rgba(0,229,255,0.2);color:var(--neon2);border-radius:20px;padding:4px 12px;font-size:12px;font-weight:500}
 .hobby-tag{background:rgba(255,179,71,0.08);border:1px solid rgba(255,179,71,0.2);color:var(--warn);border-radius:20px;padding:4px 12px;font-size:12px;font-weight:500}
@@ -320,18 +313,15 @@ select.input-field option{background:var(--bg2)}
 .comment-submit{background:linear-gradient(135deg,var(--neon),var(--neon2));border:none;border-radius:10px;padding:8px 12px;color:#030f08;font-weight:700;cursor:pointer}
 .replies-list{margin-left:36px;margin-top:6px;border-left:2px solid rgba(0,255,136,0.15);padding-left:10px}
 .reply-item{padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.03)}
-/* STEP 3: QR modal */
 .qr-wrap{display:flex;flex-direction:column;align-items:center;padding:10px 0 6px}
 .qr-canvas{border-radius:12px;background:#fff;padding:12px;box-shadow:0 0 24px rgba(0,255,136,0.15)}
 .qr-name{font-family:'Cinzel',serif;font-size:15px;font-weight:700;color:var(--text);margin-top:14px;text-align:center}
 .qr-sub{font-size:11px;color:var(--text2);margin-top:4px;text-align:center}
 .qr-share-btn{margin-top:14px;display:flex;align-items:center;justify-content:center;gap:7px;padding:11px 24px;border-radius:13px;background:linear-gradient(135deg,var(--neon),var(--neon2));border:none;color:#030f08;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;width:100%}
-/* STEP 3: Gallery */
 .gallery-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin-top:10px}
 .gallery-thumb{aspect-ratio:1;object-fit:cover;border-radius:8px;cursor:pointer;width:100%;border:1px solid var(--cb);transition:opacity .15s}
 .gallery-thumb:active{opacity:0.7}
 .gallery-add-btn{aspect-ratio:1;border-radius:8px;border:1px dashed rgba(0,255,136,0.3);display:flex;align-items:center;justify-content:center;cursor:pointer;background:rgba(0,255,136,0.02);color:var(--neon);font-size:24px;font-weight:300}
-/* STEP 4: DM / Messages */
 .dm-thread-item{display:flex;align-items:center;gap:12px;padding:12px 14px;border-bottom:1px solid var(--cb);cursor:pointer;transition:background .15s}
 .dm-thread-item:active{background:rgba(255,255,255,0.03)}
 .dm-thread-avatar{width:44px;height:44px;border-radius:50%;object-fit:cover;border:1.5px solid rgba(0,255,136,0.3);flex-shrink:0;background:var(--bg3);display:flex;align-items:center;justify-content:center}
@@ -348,7 +338,6 @@ select.input-field option{background:var(--bg2)}
 .dm-input{flex:1;background:rgba(0,0,0,0.3);border:1px solid var(--cb);border-radius:22px;padding:10px 16px;color:var(--text);font-size:14px;font-family:'Inter',sans-serif;outline:none}
 .dm-input:focus{border-color:var(--neon)}
 .dm-send-btn{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--neon),var(--neon2));border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0}
-/* STEP 4: Relation suggestions */
 .suggestion-card{background:linear-gradient(135deg,rgba(0,229,255,0.06),rgba(0,255,136,0.04));border:1px solid rgba(0,229,255,0.2);border-radius:14px;padding:14px;margin:0 14px 10px;display:flex;align-items:center;gap:12px}
 .suggestion-avatars{display:flex;flex-shrink:0}
 .suggestion-av{width:36px;height:36px;border-radius:50%;object-fit:cover;border:2px solid var(--bg);background:var(--bg3)}
@@ -360,23 +349,16 @@ select.input-field option{background:var(--bg2)}
 .sug-btn{padding:6px 12px;border-radius:20px;font-size:11px;font-weight:700;border:none;cursor:pointer;font-family:'Inter',sans-serif}
 .sug-btn.yes{background:rgba(0,255,136,0.15);color:var(--neon);border:1px solid rgba(0,255,136,0.3)}
 .sug-btn.no{background:rgba(255,255,255,0.04);color:var(--text2);border:1px solid var(--cb)}
-/* STEP 6: Stats page */
 .chart-bar-wrap{margin:0 14px 14px}
 .chart-bar-row{display:flex;align-items:center;gap:10px;margin-bottom:8px}
 .chart-bar-label{font-size:11px;color:var(--text2);width:70px;flex-shrink:0;text-align:right}
 .chart-bar-track{flex:1;height:22px;background:var(--card);border-radius:6px;overflow:hidden;border:1px solid var(--cb)}
 .chart-bar-fill{height:100%;border-radius:6px;display:flex;align-items:center;padding-left:8px;font-size:10px;font-weight:700;color:#030f08;transition:width .6s ease;min-width:24px}
 .chart-bar-val{font-size:11px;color:var(--text2);width:24px;flex-shrink:0}
-.donut-wrap{display:flex;justify-content:center;align-items:center;gap:24px;margin:10px 0}
-.donut-legend{display:flex;flex-direction:column;gap:8px}
-.donut-legend-item{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--text2)}
-.donut-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
-/* STEP 6: Advanced search */
 .adv-search-wrap{margin:0 14px 10px;background:var(--card);border:1px solid var(--cb);border-radius:14px;padding:12px;display:none}
 .adv-search-wrap.open{display:block}
 .adv-search-row{display:flex;gap:8px;margin-bottom:8px}
 .adv-search-row:last-child{margin-bottom:0}
-/* STEP 6: Settings */
 .settings-row{display:flex;align-items:center;justify-content:space-between;padding:14px;border-bottom:1px solid var(--cb)}
 .settings-row:last-child{border-bottom:none}
 .settings-label{font-size:14px;font-weight:600;color:var(--text)}
@@ -397,7 +379,7 @@ select.input-field option{background:var(--bg2)}
     <div id="auth-login">
       <div class="input-group"><div class="input-label">Хэрэглэгчийн ID</div><input id="login-id" class="input-field" placeholder="" type="text" autocomplete="username"></div>
       <div class="input-group"><div class="input-label">Нууц код</div><div class="pw-wrap"><input id="login-pw" class="input-field" type="password" placeholder="••••••••"><button class="pw-toggle" onclick="togglePw('login-pw',this)" type="button"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg></button></div></div>
-      <button class="btn btn-neon" id="login-btn"onclick="doLogin()">Нэвтрэх</button>
+      <button class="btn btn-neon" id="login-btn" onclick="doLogin()">Нэвтрэх</button>
       <div class="auth-toggle">Бүртгэлгүй юу? <span onclick="showRegister()">Бүртгүүлэх</span></div>
     </div>
     <div id="auth-register" style="display:none">
@@ -408,8 +390,8 @@ select.input-field option{background:var(--bg2)}
         <div class="input-label">📍 Бүртгэлийн байршил</div>
         <button class="btn btn-ghost" style="font-size:13px;padding:11px" onclick="getRegLocation()" id="reg-loc-btn" type="button">📍 Одоогийн байршил авах</button>
         <div class="reg-location-card" id="reg-location-card"><div style="font-size:20px;flex-shrink:0">✅</div><div style="flex:1;font-size:12px;color:var(--text2);line-height:1.5"><b style="color:var(--neon)">Байршил авагдлаа</b><br><span id="reg-location-text"></span></div></div>
- </div>
-<button class="btn btn-neon"id="reg-btn"onclick="doRegister()" disabled style="opacity:0.4;cursor:not-allowed">Бүртгүүлэх</button>
+      </div>
+      <button class="btn btn-neon" id="reg-btn" onclick="doRegister()" disabled style="opacity:0.4;cursor:not-allowed">Бүртгүүлэх</button>
       <div style="margin-top:14px;background:rgba(0,229,255,0.05);border:1px solid rgba(0,229,255,0.15);border-radius:14px;padding:14px">
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px"><div style="width:8px;height:8px;border-radius:50%;background:#00e5ff;box-shadow:0 0 6px #00e5ff;flex-shrink:0"></div><span style="font-size:11px;font-weight:700;letter-spacing:1px;color:#00e5ff;text-transform:uppercase">🔐 Authentication хамгаалалт</span></div>
         <div style="font-size:11px;color:var(--text2);line-height:1.7;margin-bottom:12px">Энэхүү систем нь <b style="color:var(--text)">Firebase Authentication</b> ашигладаг бөгөөд таны мэдээлэл нууцлагдаж хадгалагдана. Зөвхөн гэр бүлийн гишүүд нэвтрэх эрхтэй.</div>
@@ -452,7 +434,6 @@ select.input-field option{background:var(--bg2)}
 <div id="page-members" class="page">
   <div class="page-header"><div><div class="page-title">Гишүүд</div></div><button class="btn btn-ghost" style="width:auto;padding:8px 12px;font-size:12px" onclick="toggleAdvSearch()">🔍 Шүүлт</button></div>
   <div class="search-bar"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#3a5248" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input id="search-input" placeholder="Нэр, байршил, мэргэжлээр хайх..." oninput="filterMembers(this.value)"></div>
-  <!-- Advanced search -->
   <div class="adv-search-wrap" id="adv-search-wrap">
     <div class="adv-search-row">
       <input id="adv-job" class="input-field" placeholder="Мэргэжил" style="padding:10px 12px;font-size:13px">
@@ -498,26 +479,16 @@ select.input-field option{background:var(--bg2)}
   <div class="page-header"><div><div class="page-title">Профайл</div></div></div>
   <div id="my-profile-content"><div class="empty-state"><div class="spinner" style="margin:0 auto 12px"></div></div></div>
 </div>
-
-<!-- STEP 6: Stats page -->
-
 <div id="page-stats" class="page">
   <div class="page-header"><div><div class="page-title">Статистик</div><div class="page-sub" id="stats-sub">Гэр бүлийн тоон мэдээлэл</div></div></div>
   <div id="stats-content"><div class="empty-state"><div class="spinner" style="margin:0 auto 12px"></div></div></div>
 </div>
-
-<!-- STEP 4: Messages page -->
-
 <div id="page-messages" class="page">
   <div class="page-header"><div><div class="page-title">Мессеж</div><div class="page-sub" id="msg-sub">Хувийн харилцаа</div></div></div>
-  <!-- Relation suggestions -->
   <div id="suggestions-list"></div>
   <div class="neon-line"></div>
   <div id="threads-list"><div class="empty-state"><div class="spinner" style="margin:0 auto 12px"></div></div></div>
 </div>
-
-<!-- STEP 4: DM conversation modal (full screen sheet) -->
-
 <div class="modal-overlay" id="dm-modal" style="align-items:stretch;padding:0">
   <div style="background:var(--bg2);width:100%;max-width:520px;margin:0 auto;display:flex;flex-direction:column;height:100%;border-radius:0;max-height:100vh">
     <div style="display:flex;align-items:center;gap:12px;padding:52px 16px 14px;border-bottom:1px solid var(--cb);background:var(--bg2)">
@@ -533,18 +504,12 @@ select.input-field option{background:var(--bg2)}
   </div>
 </div>
 <button class="fab hidden" id="fab-add" onclick="openAddModal()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#030f08" stroke-width="2.8"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
-
-<!-- Detail modal -->
-
 <div class="modal-overlay" id="detail-modal">
   <div class="modal-sheet">
     <div class="modal-handle" onclick="closeModal('detail-modal')"></div>
     <div id="detail-content"></div>
   </div>
 </div>
-
-<!-- STEP 3: QR modal -->
-
 <div class="modal-overlay" id="qr-modal">
   <div class="modal-sheet">
     <div class="modal-handle" onclick="closeModal('qr-modal')"></div>
@@ -557,9 +522,6 @@ select.input-field option{background:var(--bg2)}
     </div>
   </div>
 </div>
-
-<!-- STEP 3: Gallery modal -->
-
 <div class="modal-overlay" id="gallery-modal">
   <div class="modal-sheet">
     <div class="modal-handle" onclick="closeModal('gallery-modal')"></div>
@@ -593,57 +555,45 @@ select.input-field option{background:var(--bg2)}
     <div class="input-group"><div class="input-label">Одоо оршин суугаа газар</div><input id="f-lives-place" class="input-field" placeholder="Токио, Япон"></div>
     <div class="input-group"><div class="input-label">Мэргэжил</div><input id="f-job" class="input-field" placeholder="Инженер, Эмч..."></div>
     <div class="input-group"><div class="input-label">Үе</div><input id="f-ue" class="input-field" placeholder="1" type="number" min="1" max="20"></div>
-
-```
-<!-- NEW STEP 2: Marriage -->
-<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text2);margin:16px 0 10px;display:flex;align-items:center;gap:8px">💍 Гэрлэлт<div style="flex:1;height:1px;background:linear-gradient(90deg,rgba(255,121,168,0.3),transparent)"></div></div>
-<div class="input-group"><div class="input-label">Хамтрагчийн нэр</div><input id="f-spouse-name" class="input-field" placeholder="Нөхөр / эхнэрийн нэр"></div>
-<div style="display:flex;gap:8px" class="input-group">
-  <div style="flex:1"><div class="input-label">Гэрлэсэн он</div><input id="f-marriage-year" class="input-field" placeholder="2010" type="number" min="1900" max="2030"></div>
-  <div style="flex:1"><div class="input-label">Гэрлэлтийн байдал</div><select id="f-marriage-status" class="input-field"><option value="">—</option><option value="married">Гэрлэсэн</option><option value="divorced">Салсан</option><option value="widowed">Бэлэвсэн</option></select></div>
-</div>
-
-<!-- NEW STEP 2: Deceased -->
-<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text2);margin:16px 0 10px;display:flex;align-items:center;gap:8px">🕯 Нас барсан мэдээлэл<div style="flex:1;height:1px;background:linear-gradient(90deg,rgba(90,114,104,0.4),transparent)"></div></div>
-<div class="input-group"><div class="input-label">Нас барсан эсэх</div><select id="f-deceased" class="input-field"><option value="">— Амьд —</option><option value="yes">Нас барсан</option></select></div>
-<div id="deceased-fields" style="display:none">
-  <div style="display:flex;gap:8px" class="input-group">
-    <div style="flex:1"><div class="input-label">Нас барсан он</div><input id="f-death-year" class="input-field" placeholder="2020" type="number" min="1900" max="2030"></div>
-    <div style="flex:1"><div class="input-label">Нас барсан газар</div><input id="f-death-place" class="input-field" placeholder="Улаанбаатар"></div>
+    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text2);margin:16px 0 10px;display:flex;align-items:center;gap:8px">💍 Гэрлэлт<div style="flex:1;height:1px;background:linear-gradient(90deg,rgba(255,121,168,0.3),transparent)"></div></div>
+    <div class="input-group"><div class="input-label">Хамтрагчийн нэр</div><input id="f-spouse-name" class="input-field" placeholder="Нөхөр / эхнэрийн нэр"></div>
+    <div style="display:flex;gap:8px" class="input-group">
+      <div style="flex:1"><div class="input-label">Гэрлэсэн он</div><input id="f-marriage-year" class="input-field" placeholder="2010" type="number" min="1900" max="2030"></div>
+      <div style="flex:1"><div class="input-label">Гэрлэлтийн байдал</div><select id="f-marriage-status" class="input-field"><option value="">—</option><option value="married">Гэрлэсэн</option><option value="divorced">Салсан</option><option value="widowed">Бэлэвсэн</option></select></div>
+    </div>
+    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text2);margin:16px 0 10px;display:flex;align-items:center;gap:8px">🕯 Нас барсан мэдээлэл<div style="flex:1;height:1px;background:linear-gradient(90deg,rgba(90,114,104,0.4),transparent)"></div></div>
+    <div class="input-group"><div class="input-label">Нас барсан эсэх</div><select id="f-deceased" class="input-field"><option value="">— Амьд —</option><option value="yes">Нас барсан</option></select></div>
+    <div id="deceased-fields" style="display:none">
+      <div style="display:flex;gap:8px" class="input-group">
+        <div style="flex:1"><div class="input-label">Нас барсан он</div><input id="f-death-year" class="input-field" placeholder="2020" type="number" min="1900" max="2030"></div>
+        <div style="flex:1"><div class="input-label">Нас барсан газар</div><input id="f-death-place" class="input-field" placeholder="Улаанбаатар"></div>
+      </div>
+    </div>
+    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text2);margin:16px 0 10px;display:flex;align-items:center;gap:8px">⚡ Ур чадвар / Хобби<div style="flex:1;height:1px;background:linear-gradient(90deg,rgba(0,229,255,0.3),transparent)"></div></div>
+    <div class="input-group">
+      <div class="input-label">Ур чадвар</div>
+      <div class="tags-input-wrap"><input id="f-skill-input" class="input-field" placeholder="Ур чадвар нэмэх..." style="padding:10px 14px" onkeydown="if(event.key==='Enter'){event.preventDefault();addTag('skill');}"><button class="btn btn-ghost" style="width:auto;padding:10px 14px;flex-shrink:0" onclick="addTag('skill')">+</button></div>
+      <div class="tags-preview" id="skill-tags"></div>
+    </div>
+    <div class="input-group">
+      <div class="input-label">Хобби / Сонирхол</div>
+      <div class="tags-input-wrap"><input id="f-hobby-input" class="input-field" placeholder="Хобби нэмэх..." style="padding:10px 14px" onkeydown="if(event.key==='Enter'){event.preventDefault();addTag('hobby');}"><button class="btn btn-ghost" style="width:auto;padding:10px 14px;flex-shrink:0" onclick="addTag('hobby')">+</button></div>
+      <div class="tags-preview" id="hobby-tags"></div>
+    </div>
+    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text2);margin:16px 0 10px;display:flex;align-items:center;gap:8px">🎓 Боловсрол<div style="flex:1;height:1px;background:linear-gradient(90deg,rgba(0,255,136,0.2),transparent)"></div></div>
+    <div class="edu-block"><div class="edu-block-title">📚 Бага сургууль</div><input id="edu-baga-name" class="input-field" placeholder="Сургуулийн нэр" style="margin-bottom:8px"><div style="display:flex;gap:8px"><input id="edu-baga-year" class="input-field" placeholder="Он" type="number" style="flex:1"><select id="edu-baga-status" class="input-field" style="flex:1"><option value="">Төлөв</option><option>Төгссөн</option><option>Тасалдсан</option><option>Суралцаж байгаа</option></select></div></div>
+    <div class="edu-block"><div class="edu-block-title">📖 Дунд сургууль</div><input id="edu-dund-name" class="input-field" placeholder="Сургуулийн нэр" style="margin-bottom:8px"><div style="display:flex;gap:8px"><input id="edu-dund-year" class="input-field" placeholder="Он" type="number" style="flex:1"><select id="edu-dund-status" class="input-field" style="flex:1"><option value="">Төлөв</option><option>Төгссөн</option><option>Тасалдсан</option><option>Суралцаж байгаа</option></select></div></div>
+    <div class="edu-block"><div class="edu-block-title">🏫 Ахлах сургууль</div><input id="edu-akh-name" class="input-field" placeholder="Сургуулийн нэр" style="margin-bottom:8px"><div style="display:flex;gap:8px"><input id="edu-akh-year" class="input-field" placeholder="Он" type="number" style="flex:1"><select id="edu-akh-status" class="input-field" style="flex:1"><option value="">Төлөв</option><option>Төгссөн</option><option>Тасалдсан</option><option>Суралцаж байгаа</option></select></div></div>
+    <div class="edu-block"><div class="edu-block-title">🏛️ Коллеж</div><input id="edu-col-name" class="input-field" placeholder="Коллежийн нэр" style="margin-bottom:8px"><div style="display:flex;gap:8px"><input id="edu-col-year" class="input-field" placeholder="Он" type="number" style="flex:1"><select id="edu-col-status" class="input-field" style="flex:1"><option value="">Төлөв</option><option>Төгссөн</option><option>Тасалдсан</option><option>Суралцаж байгаа</option></select></div></div>
+    <div class="edu-block"><div class="edu-block-title">🎓 Дээд сургууль</div><input id="edu-deed-name" class="input-field" placeholder="Их сургуулийн нэр" style="margin-bottom:8px"><div style="display:flex;gap:8px"><input id="edu-deed-year" class="input-field" placeholder="Он" type="number" style="flex:1"><select id="edu-deed-status" class="input-field" style="flex:1"><option value="">Төлөв</option><option>Төгссөн</option><option>Тасалдсан</option><option>Суралцаж байгаа</option></select></div></div>
+    <div class="edu-block"><div class="edu-block-title">📜 Бакалавр</div><input id="edu-bak-name" class="input-field" placeholder="Сургуулийн нэр" style="margin-bottom:8px"><div style="display:flex;gap:8px"><input id="edu-bak-year" class="input-field" placeholder="Он" type="number" style="flex:1"><select id="edu-bak-status" class="input-field" style="flex:1"><option value="">Төлөв</option><option>Төгссөн</option><option>Тасалдсан</option><option>Суралцаж байгаа</option></select></div></div>
+    <div class="edu-block"><div class="edu-block-title">🏆 Магистр</div><input id="edu-mag-name" class="input-field" placeholder="Сургуулийн нэр" style="margin-bottom:8px"><div style="display:flex;gap:8px"><input id="edu-mag-year" class="input-field" placeholder="Он" type="number" style="flex:1"><select id="edu-mag-status" class="input-field" style="flex:1"><option value="">Төлөв</option><option>Төгссөн</option><option>Тасалдсан</option><option>Суралцаж байгаа</option></select></div></div>
+    <div class="edu-block"><div class="edu-block-title">🔬 Доктор (PhD)</div><input id="edu-doc-name" class="input-field" placeholder="Судалгааны байгууллага" style="margin-bottom:8px"><div style="display:flex;gap:8px"><input id="edu-doc-year" class="input-field" placeholder="Он" type="number" style="flex:1"><select id="edu-doc-status" class="input-field" style="flex:1"><option value="">Төлөв</option><option>Төгссөн</option><option>Тасалдсан</option><option>Суралцаж байгаа</option></select></div></div>
+    <div class="input-group" style="margin-top:10px"><div class="input-label">GPS байршил</div><div style="display:flex;gap:8px"><input id="f-lat" class="input-field" placeholder="Өргөрөг" type="number" step="any"><input id="f-lng" class="input-field" placeholder="Уртраг" type="number" step="any"></div><button class="btn btn-ghost" style="margin-top:7px;font-size:12px" onclick="getCurrentLocation()">📍 GPS байршил авах</button></div>
+    <div class="input-group"><div class="input-label">Нэмэлт мэдээлэл</div><textarea id="f-bio" class="input-field" rows="3" placeholder="Тайлбар..."></textarea></div>
+    <div style="display:flex;gap:9px;margin-top:6px"><button class="btn btn-ghost" onclick="closeModal('form-modal')" style="flex:1">Болих</button><button class="btn btn-neon" id="form-submit-btn" onclick="submitForm()" style="flex:2">✓ Хадгалах</button></div>
   </div>
 </div>
-
-<!-- NEW STEP 2: Skills & Hobbies -->
-<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text2);margin:16px 0 10px;display:flex;align-items:center;gap:8px">⚡ Ур чадвар / Хобби<div style="flex:1;height:1px;background:linear-gradient(90deg,rgba(0,229,255,0.3),transparent)"></div></div>
-<div class="input-group">
-  <div class="input-label">Ур чадвар</div>
-  <div class="tags-input-wrap"><input id="f-skill-input" class="input-field" placeholder="Ур чадвар нэмэх..." style="padding:10px 14px" onkeydown="if(event.key==='Enter'){event.preventDefault();addTag('skill');}"><button class="btn btn-ghost" style="width:auto;padding:10px 14px;flex-shrink:0" onclick="addTag('skill')">+</button></div>
-  <div class="tags-preview" id="skill-tags"></div>
-</div>
-<div class="input-group">
-  <div class="input-label">Хобби / Сонирхол</div>
-  <div class="tags-input-wrap"><input id="f-hobby-input" class="input-field" placeholder="Хобби нэмэх..." style="padding:10px 14px" onkeydown="if(event.key==='Enter'){event.preventDefault();addTag('hobby');}"><button class="btn btn-ghost" style="width:auto;padding:10px 14px;flex-shrink:0" onclick="addTag('hobby')">+</button></div>
-  <div class="tags-preview" id="hobby-tags"></div>
-</div>
-
-<!-- Education -->
-<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text2);margin:16px 0 10px;display:flex;align-items:center;gap:8px">🎓 Боловсрол<div style="flex:1;height:1px;background:linear-gradient(90deg,rgba(0,255,136,0.2),transparent)"></div></div>
-<div class="edu-block"><div class="edu-block-title">📚 Бага сургууль</div><input id="edu-baga-name" class="input-field" placeholder="Сургуулийн нэр" style="margin-bottom:8px"><div style="display:flex;gap:8px"><input id="edu-baga-year" class="input-field" placeholder="Он" type="number" style="flex:1"><select id="edu-baga-status" class="input-field" style="flex:1"><option value="">Төлөв</option><option>Төгссөн</option><option>Тасалдсан</option><option>Суралцаж байгаа</option></select></div></div>
-<div class="edu-block"><div class="edu-block-title">📖 Дунд сургууль</div><input id="edu-dund-name" class="input-field" placeholder="Сургуулийн нэр" style="margin-bottom:8px"><div style="display:flex;gap:8px"><input id="edu-dund-year" class="input-field" placeholder="Он" type="number" style="flex:1"><select id="edu-dund-status" class="input-field" style="flex:1"><option value="">Төлөв</option><option>Төгссөн</option><option>Тасалдсан</option><option>Суралцаж байгаа</option></select></div></div>
-<div class="edu-block"><div class="edu-block-title">🏫 Ахлах сургууль</div><input id="edu-akh-name" class="input-field" placeholder="Сургуулийн нэр" style="margin-bottom:8px"><div style="display:flex;gap:8px"><input id="edu-akh-year" class="input-field" placeholder="Он" type="number" style="flex:1"><select id="edu-akh-status" class="input-field" style="flex:1"><option value="">Төлөв</option><option>Төгссөн</option><option>Тасалдсан</option><option>Суралцаж байгаа</option></select></div></div>
-<div class="edu-block"><div class="edu-block-title">🏛️ Коллеж</div><input id="edu-col-name" class="input-field" placeholder="Коллежийн нэр" style="margin-bottom:8px"><div style="display:flex;gap:8px"><input id="edu-col-year" class="input-field" placeholder="Он" type="number" style="flex:1"><select id="edu-col-status" class="input-field" style="flex:1"><option value="">Төлөв</option><option>Төгссөн</option><option>Тасалдсан</option><option>Суралцаж байгаа</option></select></div></div>
-<div class="edu-block"><div class="edu-block-title">🎓 Дээд сургууль</div><input id="edu-deed-name" class="input-field" placeholder="Их сургуулийн нэр" style="margin-bottom:8px"><div style="display:flex;gap:8px"><input id="edu-deed-year" class="input-field" placeholder="Он" type="number" style="flex:1"><select id="edu-deed-status" class="input-field" style="flex:1"><option value="">Төлөв</option><option>Төгссөн</option><option>Тасалдсан</option><option>Суралцаж байгаа</option></select></div></div>
-<div class="edu-block"><div class="edu-block-title">📜 Бакалавр</div><input id="edu-bak-name" class="input-field" placeholder="Сургуулийн нэр" style="margin-bottom:8px"><div style="display:flex;gap:8px"><input id="edu-bak-year" class="input-field" placeholder="Он" type="number" style="flex:1"><select id="edu-bak-status" class="input-field" style="flex:1"><option value="">Төлөв</option><option>Төгссөн</option><option>Тасалдсан</option><option>Суралцаж байгаа</option></select></div></div>
-<div class="edu-block"><div class="edu-block-title">🏆 Магистр</div><input id="edu-mag-name" class="input-field" placeholder="Сургуулийн нэр" style="margin-bottom:8px"><div style="display:flex;gap:8px"><input id="edu-mag-year" class="input-field" placeholder="Он" type="number" style="flex:1"><select id="edu-mag-status" class="input-field" style="flex:1"><option value="">Төлөв</option><option>Төгссөн</option><option>Тасалдсан</option><option>Суралцаж байгаа</option></select></div></div>
-<div class="edu-block"><div class="edu-block-title">🔬 Доктор (PhD)</div><input id="edu-doc-name" class="input-field" placeholder="Судалгааны байгууллага" style="margin-bottom:8px"><div style="display:flex;gap:8px"><input id="edu-doc-year" class="input-field" placeholder="Он" type="number" style="flex:1"><select id="edu-doc-status" class="input-field" style="flex:1"><option value="">Төлөв</option><option>Төгссөн</option><option>Тасалдсан</option><option>Суралцаж байгаа</option></select></div></div>
-<div class="input-group" style="margin-top:10px"><div class="input-label">GPS байршил</div><div style="display:flex;gap:8px"><input id="f-lat" class="input-field" placeholder="Өргөрөг" type="number" step="any"><input id="f-lng" class="input-field" placeholder="Уртраг" type="number" step="any"></div><button class="btn btn-ghost" style="margin-top:7px;font-size:12px" onclick="getCurrentLocation()">📍 GPS байршил авах</button></div>
-<div class="input-group"><div class="input-label">Нэмэлт мэдээлэл</div><textarea id="f-bio" class="input-field" rows="3" placeholder="Тайлбар..."></textarea></div>
-<div style="display:flex;gap:9px;margin-top:6px"><button class="btn btn-ghost" onclick="closeModal('form-modal')" style="flex:1">Болих</button><button class="btn btn-neon" id="form-submit-btn" onclick="submitForm()" style="flex:2">✓ Хадгалах</button></div>
-```
-
-  </div>
-</div>
-
 <div class="modal-overlay" id="profile-edit-modal">
   <div class="modal-sheet">
     <div class="modal-handle" onclick="closeModal('profile-edit-modal')"></div>
@@ -671,7 +621,6 @@ select.input-field option{background:var(--bg2)}
   </div>
 </div>
 <div class="toast" id="toast"></div>
-<!-- STEP 5: Offline banner -->
 <div class="offline-banner" id="offline-banner">📡 Интернет холболт алга — кэшлэгдсэн өгөгдөл харагдаж байна</div>
 <script>
 let currentUser=null,currentEmail=null,isAdmin=false,allMembers=[],allPosts=[],editingKey=null,selectedPhotoFile=null,selectedPhotoRemoved=false,selectedPeditFile=null,selectedPeditRemoved=false,selectedPostFile=null;
@@ -680,27 +629,20 @@ let gmap=null,gmapMarkers=[];
 let confirmCallback=null;
 let regLat=null,regLng=null;
 let activeFilter='all',activeUeFilter=null;
-// NEW: tag arrays
 let formSkills=[],formHobbies=[];
 const EDU_LEVELS=[['baga','Бага'],['dund','Дунд'],['akh','Ахлах'],['col','Коллеж'],['deed','Дээд / Их'],['bak','Бакалавр'],['mag','Магистр'],['doc','Доктор']];
 const MARRIAGE_STATUS_MN={married:'Гэрлэсэн',divorced:'Салсан',widowed:'Бэлэвсэн'};
 
-// Show/hide deceased fields - wrapped safely
 document.addEventListener(‘DOMContentLoaded’,function(){
-// Login buttons
-const loginBtn=document.getElementById(‘login-btn’);
-if(loginBtn)loginBtn.addEventListener(‘click’,doLogin);
-const regBtn=document.getElementById(‘reg-btn’);
-if(regBtn)regBtn.addEventListener(‘click’,doRegister);
-const showRegLink=document.querySelector(’.auth-toggle span’);
-// Deceased fields
 const decEl=document.getElementById(‘f-deceased’);
 if(decEl)decEl.addEventListener(‘change’,function(){
 document.getElementById(‘deceased-fields’).style.display=this.value===‘yes’?‘block’:‘none’;
 });
 const confirmOk=document.getElementById(‘confirm-ok-btn’);
 if(confirmOk)confirmOk.onclick=()=>{if(confirmCallback)confirmCallback();closeConfirm();};
-document.querySelectorAll(’.modal-overlay’).forEach(o=>{o.addEventListener(‘click’,e=>{if(e.target===o)o.classList.remove(‘open’);});});
+document.querySelectorAll(’.modal-overlay’).forEach(o=>{
+o.addEventListener(‘click’,e=>{if(e.target===o)o.classList.remove(‘open’);});
+});
 const loginPw=document.getElementById(‘login-pw’);
 if(loginPw)loginPw.addEventListener(‘keydown’,e=>{if(e.key===‘Enter’)doLogin();});
 });
@@ -753,7 +695,7 @@ if(pw!==pw2){showToast(‘Нууц үг таарахгүй’,‘error’);retur
 const btn=document.getElementById(‘reg-btn’);btn.innerHTML=’<div class="spinner"></div>’;btn.disabled=true;
 try{
 const d=await fbAuthReq(‘signUp’,{email,password:pw,returnSecureToken:true});
-fbToken=d.idToken;fbUID=d.localId;fbRefreshToken=d.refreshToken;
+fbToken=d.idToken;fbUID=d.localId;fbRefreshToken=d.refresh_token;
 const userData={email,userId:rawId,createdAt:Date.now()};
 if(regLat&&regLng){userData.regLat=regLat;userData.regLng=regLng;}
 await fbSet(‘users/’+fbUID,userData);
@@ -782,7 +724,6 @@ document.getElementById(‘home-greeting’).textContent=‘Сайн байна 
 if(isAdmin)document.getElementById(‘admin-badge’).style.display=‘flex’;
 initTheme();
 updateOfflineBanner();
-// Use cached versions that save to localStorage
 loadAllMembersCached();loadPostsCached();
 setInterval(refreshToken,55*60*1000);
 }
@@ -810,8 +751,8 @@ if(page!==‘messages’&&dmInterval){clearInterval(dmInterval);dmInterval=null;
 function canEditMember(m){return isAdmin||(m&&m.createdBy===fbUID);}
 function canDeleteMember(){return isAdmin;}
 function getRelation(me,other){
-if(!me||!other||!me.ovog||!other.ovog)return’’;
-if(me.ovog.trim().toLowerCase()!==other.ovog.trim().toLowerCase())return’’;
+if(!me||!other||!me.ovog||!other.ovog)return ‘’;
+if(me.ovog.trim().toLowerCase()!==other.ovog.trim().toLowerCase())return ‘’;
 const myUe=parseInt(me.ue)||0,otherUe=parseInt(other.ue)||0,diff=otherUe-myUe;
 const isFemale=other.huys===‘Эмэгтэй’;
 if(diff===0){const myY=parseInt(me.year)||0,otY=parseInt(other.year)||0;if(!myY||!otY)return isFemale?‘Эгч/Дүү’:‘Ах/Дүү’;return otY<myY?(isFemale?‘Эгч’:‘Ах’):‘Дүү’;}
@@ -821,7 +762,7 @@ if(diff<=-3)return isFemale?‘Өвгөн эмээ’:‘Өвгөн өвөө’;
 if(diff===1)return isFemale?‘Охин’:‘Хүү’;
 if(diff===2)return isFemale?‘Ач охин’:‘Ач хүү’;
 if(diff>=3)return isFemale?‘Зээ охин’:‘Зээ хүү’;
-return’’;
+return ‘’;
 }
 function calcAge(year){if(!year)return null;return new Date().getFullYear()-parseInt(year);}
 function loadAllMembers(){
@@ -836,19 +777,19 @@ document.getElementById(‘stat-gen’).textContent=[…new Set(allMembers.map(m
 document.getElementById(‘stat-loc’).textContent=allMembers.filter(m=>m.lat&&m.lng).length;
 }
 function getFlag(place){
-if(!place)return’’;
+if(!place)return ‘’;
 const p=place.toLowerCase();
-if(p.includes(‘япон’)||p.includes(‘токио’)||p.includes(‘japan’)||p.includes(‘tokyo’))return’🇯🇵’;
-if(p.includes(‘солонгос’)||p.includes(‘сеул’)||p.includes(‘korea’)||p.includes(‘seoul’))return’🇰🇷’;
-if(p.includes(‘хятад’)||p.includes(‘бээжин’)||p.includes(‘china’)||p.includes(‘beijing’))return’🇨🇳’;
-if(p.includes(‘америк’)||p.includes(‘usa’)||p.includes(‘нью йорк’))return’🇺🇸’;
-if(p.includes(‘герман’)||p.includes(‘germany’)||p.includes(‘берлин’))return’🇩🇪’;
-if(p.includes(‘австрали’)||p.includes(‘australia’))return’🇦🇺’;
-if(p.includes(‘англи’)||p.includes(‘лондон’)||p.includes(‘uk’)||p.includes(‘england’))return’🇬🇧’;
-if(p.includes(‘канад’)||p.includes(‘canada’))return’🇨🇦’;
-if(p.includes(‘франц’)||p.includes(‘paris’)||p.includes(‘france’))return’🇫🇷’;
-if(p.includes(‘монгол’)||p.includes(‘улаанбаатар’)||p.includes(‘дархан’)||p.includes(‘эрдэнэт’))return’🇲🇳’;
-return’’;
+if(p.includes(‘япон’)||p.includes(‘токио’)||p.includes(‘japan’)||p.includes(‘tokyo’))return ‘🇯🇵’;
+if(p.includes(‘солонгос’)||p.includes(‘сеул’)||p.includes(‘korea’)||p.includes(‘seoul’))return ‘🇰🇷’;
+if(p.includes(‘хятад’)||p.includes(‘бээжин’)||p.includes(‘china’)||p.includes(‘beijing’))return ‘🇨🇳’;
+if(p.includes(‘америк’)||p.includes(‘usa’)||p.includes(‘нью йорк’))return ‘🇺🇸’;
+if(p.includes(‘герман’)||p.includes(‘germany’)||p.includes(‘берлин’))return ‘🇩🇪’;
+if(p.includes(‘австрали’)||p.includes(‘australia’))return ‘🇦🇺’;
+if(p.includes(‘англи’)||p.includes(‘лондон’)||p.includes(‘uk’)||p.includes(‘england’))return ‘🇬🇧’;
+if(p.includes(‘канад’)||p.includes(‘canada’))return ‘🇨🇦’;
+if(p.includes(‘франц’)||p.includes(‘paris’)||p.includes(‘france’))return ‘🇫🇷’;
+if(p.includes(‘монгол’)||p.includes(‘улаанбаатар’)||p.includes(‘дархан’)||p.includes(‘эрдэнэт’))return ‘🇲🇳’;
+return ‘’;
 }
 function memberCardHTML(m){
 const me=allMembers.find(x=>x.createdBy===fbUID);
@@ -919,8 +860,6 @@ if(!bdays.length){document.getElementById(‘bday-banner’).classList.remove(�
 document.getElementById(‘bday-list’).innerHTML=bdays.map(m=>{const rel=me?getRelation(me,m):’’;const age=calcAge(m.year);return(rel?‘Таны <b>’+rel+’</b> ‘:’’)+m.ovog+’ ‘+m.ner+(age?’ (’+age+’ нас)’:’’)+‘🎉’;}).join(’<br>’);
 document.getElementById(‘bday-banner’).classList.add(‘show’);
 }
-
-// NEW STEP 2: Tags management
 function addTag(type){
 const input=document.getElementById(‘f-’+type+’-input’);
 const val=input.value.trim();
@@ -940,7 +879,6 @@ const arr=type===‘skill’?formSkills:formHobbies;
 const cls=type===‘skill’?‘skill’:‘hobby’;
 document.getElementById(type+’-tags’).innerHTML=arr.map(v=>’<span class="tag-item '+cls+'" onclick="removeTag(\''+type+'\',\''+escHtml(v)+'\')">’+escHtml(v)+’ <span class="rm">×</span></span>’).join(’’);
 }
-
 function openDetail(key){
 const m=allMembers.find(x=>x.key===key);if(!m)return;
 const me=allMembers.find(x=>x.createdBy===fbUID);
@@ -950,18 +888,12 @@ const isDeceased=m.deceased===‘yes’;
 const avt=m.photo?’<img class="detail-avatar'+(isDeceased?' deceased-av':'')+'" src="'+m.photo+'" alt="">’:’’;
 const bdayStr=m.month&&m.day?m.month+’-р сарын ‘+m.day:’’;
 const rows=[[‘Ургийн овог’,m.urgiin_ovog],[‘Төрсөн он’,m.year?(m.year+(bdayStr?’ · ‘+bdayStr:’’)+(age&&!isDeceased?’ (’+age+’ нас)’:’’)):null],[‘Хүйс’,m.huys],[‘Төрсөн газар’,m.bornPlace],[‘Өссөн газар’,m.raisedPlace],[‘Одоо суугаа’,isDeceased?null:m.livesPlace],[‘Мэргэжил’,isDeceased?null:m.job],[‘Үе’,m.ue?m.ue+’-р үе’:null],[‘Тайлбар’,m.bio]].filter(r=>r[1]).map(r=>’<div class="detail-row"><div><div class="detail-key">’+r[0]+’</div><div class="detail-val">’+r[1]+’</div></div></div>’).join(’’);
-
-// Deceased banner
 const decBanner=isDeceased?’<div class="deceased-detail-banner"><span style="font-size:22px">🕯</span><div><div style="font-size:13px;font-weight:700;color:var(--text2)">Нас барсан</div><div style="font-size:12px;color:var(--text2)">’+(m.deathYear?m.deathYear+’ онд’:’’)+’ ‘+(m.deathPlace?m.deathPlace+‘д’:’’)+(age?’ · ‘+age+’ насандаа’:’’)+’</div></div></div>’:’’;
-
-// Marriage section
 let marriageHtml=’’;
 if(m.spouseName){
 const msLabel={married:‘💍 Гэрлэсэн’,divorced:‘💔 Салсан’,widowed:‘🕊 Бэлэвсэн’}[m.marriageStatus]||‘💍 Гэрлэлт’;
 marriageHtml=’<div class="marriage-card"><div class="marriage-icon">’+msLabel.charAt(0)+’</div><div><div class="marriage-label">’+msLabel+’</div><div class="marriage-value">’+escHtml(m.spouseName)+’</div>’+(m.marriageYear?’<div class="marriage-date">’+m.marriageYear+’ оноос</div>’:’’)+’</div></div>’;
 }
-
-// Skills & hobbies
 let skillsHtml=’’;
 if((m.skills&&m.skills.length)||(m.hobbies&&m.hobbies.length)){
 skillsHtml=’<div style="margin-top:14px">’;
@@ -969,20 +901,14 @@ if(m.skills&&m.skills.length)skillsHtml+=’<div style="font-size:11px;font-weig
 if(m.hobbies&&m.hobbies.length)skillsHtml+=’<div style="font-size:11px;font-weight:700;letter-spacing:1px;color:var(--text2);margin:10px 0 8px;text-transform:uppercase">🎯 Хобби</div><div class="skills-wrap">’+m.hobbies.map(h=>’<span class="hobby-tag">’+escHtml(h)+’</span>’).join(’’)+’</div>’;
 skillsHtml+=’</div>’;
 }
-
-// Education
 let eduHtml=’’;
 if(m.edu){const filled=EDU_LEVELS.filter(([k])=>m.edu[k]&&m.edu[k].name);if(filled.length)eduHtml=’<div style="margin-top:14px"><div style="font-size:11px;font-weight:700;letter-spacing:1px;color:var(--text2);margin-bottom:8px;text-transform:uppercase">🎓 Боловсрол</div><div class="edu-grid">’+filled.map(([k,lbl])=>’<div class="edu-card filled"><div class="edu-card-level">’+lbl+’</div><div class="edu-card-name">’+m.edu[k].name+’</div>’+(m.edu[k].year?’<div class="edu-card-year">’+m.edu[k].year+’</div>’:’’)+(m.edu[k].status?’<div class="edu-card-badge">’+m.edu[k].status+’</div>’:’’)+’</div>’).join(’’)+’</div></div>’;}
-
 const canEdit=canEditMember(m);const canDel=canDeleteMember();
 const btns=canEdit||canDel?’<div style="display:flex;gap:9px;margin-top:16px">’+(canEdit?’<button class="btn btn-ghost" style="flex:1" onclick="closeModal(\'detail-modal\');openEditModal(\''+key+'\')">✏️ Засах</button>’:’’)+(canDel?’<button class="btn btn-danger" style="flex:1" onclick="confirmDeleteMember(\''+key+'\')">🗑 Устгах</button>’:’’)+’</div>’:’’;
-// STEP 3: QR and Gallery buttons
 const extraBtns=’<div style="display:flex;gap:9px;margin-top:10px"><button class="btn btn-ghost" style="flex:1;font-size:13px" onclick="openGallery(\''+key+'\')">📸 Цомог</button><button class="btn btn-ghost" style="flex:1;font-size:13px" onclick="openQR(\''+key+'\')">🔳 QR</button>’+(m.createdBy!==fbUID?’<button class="btn btn-ghost" style="flex:1;font-size:13px" onclick="openDMFromDetail(\''+safeKey(m.createdBy)+'\',\''+escHtml((m.ovog||'')+' '+(m.ner||''))+'\')">💬</button>’:’’)+’</div>’;
-
 document.getElementById(‘detail-content’).innerHTML=avt+decBanner+’<div class="detail-name">’+(m.ovog||’’)+’ ‘+(m.ner||’’)+’</div><div style="text-align:center;margin-bottom:14px">’+(rel?’<span style="display:inline-flex;font-size:12px;background:rgba(0,229,255,0.08);border:1px solid rgba(0,229,255,0.2);border-radius:20px;padding:3px 10px;color:var(--neon2)">’+rel+’</span>’:’’)+’</div>’+marriageHtml+’<div>’+rows+’</div>’+skillsHtml+eduHtml+extraBtns+btns;
 openModal(‘detail-modal’);
 }
-
 function openAddModal(){
 if(!isAdmin){showToast(‘Зөвхөн админ нэмэх боломжтой’,‘error’);return;}
 editingKey=null;selectedPhotoFile=null;selectedPhotoRemoved=false;
@@ -1010,11 +936,9 @@ document.getElementById(‘f-month’).value=m.month||’’;document.getElement
 document.getElementById(‘f-born-place’).value=m.bornPlace||’’;document.getElementById(‘f-raised-place’).value=m.raisedPlace||’’;
 document.getElementById(‘f-lives-place’).value=m.livesPlace||’’;document.getElementById(‘f-job’).value=m.job||’’;
 document.getElementById(‘f-ue’).value=m.ue||’’;document.getElementById(‘f-lat’).value=m.lat||’’;document.getElementById(‘f-lng’).value=m.lng||’’;document.getElementById(‘f-bio’).value=m.bio||’’;
-// Marriage fields
 document.getElementById(‘f-spouse-name’).value=m.spouseName||’’;
 document.getElementById(‘f-marriage-year’).value=m.marriageYear||’’;
 document.getElementById(‘f-marriage-status’).value=m.marriageStatus||’’;
-// Deceased fields
 document.getElementById(‘f-deceased’).value=m.deceased||’’;
 document.getElementById(‘deceased-fields’).style.display=m.deceased===‘yes’?‘block’:‘none’;
 document.getElementById(‘f-death-year’).value=m.deathYear||’’;
@@ -1055,15 +979,13 @@ ue:document.getElementById(‘f-ue’).value,
 lat:document.getElementById(‘f-lat’).value,lng:document.getElementById(‘f-lng’).value,
 bio:document.getElementById(‘f-bio’).value.trim(),
 edu,photo:photoURL,
-// NEW STEP 2
 spouseName:document.getElementById(‘f-spouse-name’).value.trim(),
 marriageYear:document.getElementById(‘f-marriage-year’).value,
 marriageStatus:document.getElementById(‘f-marriage-status’).value,
 deceased:document.getElementById(‘f-deceased’).value,
 deathYear:document.getElementById(‘f-death-year’).value,
 deathPlace:document.getElementById(‘f-death-place’).value.trim(),
-skills:formSkills,
-hobbies:formHobbies,
+skills:formSkills,hobbies:formHobbies,
 updatedAt:Date.now()
 };
 if(editingKey){const ex=allMembers.find(m=>m.key===editingKey);data.createdBy=ex?.createdBy||fbUID;data.createdAt=ex?.createdAt||Date.now();return fbSet(‘members/’+editingKey,data).then(()=>{showToast(‘Хадгалагдлаа’,‘success’);closeModal(‘form-modal’);loadAllMembers();});}
@@ -1156,7 +1078,12 @@ return fbPush(‘posts’,{text,photo:photoURL||’’,authorId:fbUID,authorName
 };
 (selectedPostFile?uploadFile(selectedPostFile,‘posts’):Promise.resolve(’’)).then(doPost).catch(e=>showToast(‘Алдаа: ‘+e.message,‘error’));
 }
-function loadPosts(){fbGet(‘posts’).then(data=>{allPosts=data?Object.entries(data).map(([k,v])=>({key:k,…v})).reverse():[];renderFeed();}).catch(()=>{});}
+function loadPosts(){
+fbGet(‘posts’).then(data=>{
+allPosts=data?Object.entries(data).map(([k,v])=>({key:k,…v})).reverse():[];
+renderFeed();
+}).catch(()=>{});
+}
 function renderFeed(){
 const el=document.getElementById(‘feed-list’);
 if(!allPosts.length){el.innerHTML=’<div class="empty-state">📰<br>Нийтлэл байхгүй байна</div>’;return;}
@@ -1200,7 +1127,7 @@ return ‘<div class="comment-item"><div class="comment-header">’+(c.authorPho
 function toggleReply(commentKey){const w=document.getElementById(‘reply-wrap-’+commentKey);if(!w)return;w.style.display=w.style.display===‘none’?‘flex’:‘none’;}
 async function deleteComment(postKey,commentKey){await fbRemove(‘posts/’+postKey+’/comments/’+commentKey);loadComments(postKey);}
 function escHtml(s){return(s||’’).replace(/&/g,’&’).replace(/</g,’<’).replace(/>/g,’>’).replace(/”/g,’"’);}
-function safeKey(s){return(s||’’).replace(/[.#$[]/\s@]/g,’_’);}
+function safeKey(s){return(s||’’).replace(/[.#$[]\s@]/g,’_’);}
 function toggleLike(postKey){
 const key=safeKey(fbUID);const post=allPosts.find(p=>p.key===postKey);if(!post)return;
 (post.likes&&post.likes[key]?fbRemove(‘posts/’+postKey+’/likes/’+key):fbSet(‘posts/’+postKey+’/likes/’+key,true)).then(loadPosts);
@@ -1212,7 +1139,7 @@ if(!names.length){showToast(‘Лайк байхгүй’,‘success’);return;
 showConfirm(‘❤️ Лайк дарсан хүмүүс’,names.join(’, ‘),()=>{});
 }
 function confirmDeletePost(postKey){showConfirm(‘Нийтлэл устгах уу?’,‘Энэ үйлдлийг буцаах боломжгүй.’,()=>{fbRemove(‘posts/’+postKey).then(()=>{showToast(‘Устгагдлаа’,‘success’);loadPosts();});});}
-function formatTime(ts){if(!ts)return’’;const d=Date.now()-ts;if(d<60000)return’Дэнэхэн’;if(d<3600000)return Math.floor(d/60000)+’ мин’;if(d<86400000)return Math.floor(d/3600000)+’ цаг’;return Math.floor(d/86400000)+’ өдөр’;}
+function formatTime(ts){if(!ts)return ‘’;const d=Date.now()-ts;if(d<60000)return ‘Дэнэхэн’;if(d<3600000)return Math.floor(d/60000)+’ мин’;if(d<86400000)return Math.floor(d/3600000)+’ цаг’;return Math.floor(d/86400000)+’ өдөр’;}
 function openImgModal(src){
 const o=document.createElement(‘div’);o.style.cssText=‘position:fixed;inset:0;background:rgba(0,0,0,0.95);z-index:999;display:flex;align-items:center;justify-content:center;cursor:pointer’;
 o.innerHTML=’<img src="'+src+'" style="max-width:100%;max-height:100%;object-fit:contain"><button style="position:absolute;top:16px;right:16px;background:rgba(255,255,255,0.15);border:none;color:#fff;width:36px;height:36px;border-radius:50%;font-size:18px;cursor:pointer">✕</button>’;
@@ -1238,9 +1165,9 @@ const gc=isDeceased?‘rgba(90,114,104,0.1)’:ml?‘rgba(0,255,136,0.15)’:f?�
 const nm=((m.ovog||’’)+’ ‘+(m.ner||’’)).trim();const sn=nm.length>10?nm.substring(0,10)+’…’:nm;
 html+=’<circle cx="'+p.x+'" cy="'+p.y+'" r="'+(R+6)+'" fill="'+gc+'" opacity="0.6"/>’;
 if(m.photo){html+=’<defs><clipPath id="c_'+m.key+'"><circle cx="'+p.x+'" cy="'+p.y+'" r="'+R+'"/></clipPath></defs><g class=“tree-node” onclick=“openDetail('’+m.key+’')”’+(isDeceased?’ opacity=“0.5”’:’’)+’><circle cx="'+p.x+'" cy="'+p.y+'" r="'+R+'" fill="#0f1620" stroke="'+sc+'" stroke-width="2"/><image href="'+m.photo+'" x="'+(p.x-R)+'" y="'+(p.y-R)+'" width="'+(R*2)+'" height="'+(R*2)+'" clip-path="url(#c_'+m.key+')" preserveAspectRatio="xMidYMid slice"/><circle cx="'+p.x+'" cy="'+p.y+'" r="'+R+'" fill="none" stroke="'+sc+'" stroke-width="2"/>’;}
-else{html+=’<g class=“tree-node” onclick=“openDetail('’+m.key+’')”’+(isDeceased?’ opacity=“0.5”’:’’)+’><circle cx="'+p.x+'" cy="'+p.y+'" r="'+R+'" fill="'+(ml?'#0a2018':f?'#1e0a14':'#0f1620')+'" stroke="'+sc+'" stroke-width="2"/><text x="'+p.x+'" y="'+(p.y+5)+'" text-anchor="middle" font-size="18" font-weight="700" fill="'+(ml?'rgba(0,255,136,0.6)':f?'rgba(255,121,168,0.6)':'rgba(90,114,104,0.5)')+'" font-family="sans-serif">’+(isDeceased?‘✝’:(m.ner||’?’).charAt(0).toUpperCase())+’</text>’;}
+else{html+=’<g class=“tree-node” onclick=“openDetail('’+m.key+’')”’+(isDeceased?’ opacity=“0.5”’:’’)+’><circle cx="'+p.x+'" cy="'+p.y+'" r="'+R+'" fill="'+(ml?'#0a2018':f?'#1e0a14':'#0f1620')+'" stroke="'+sc+'" stroke-width="2"/><text x="'+p.x+'" y="'+(p.y+5)+'" text-anchor="middle" font-size="18" font-weight="700" fill="'+(ml?'rgba(0,255,136,0.6)':f?'rgba(255,121,168,0.6)':'rgba(90,114,104,0.5)')+'" font-family="sans-serif">’+(isDeceased?’✝’:(m.ner||’?’).charAt(0).toUpperCase())+’</text>’;}
 html+=’<text x="'+p.x+'" y="'+(p.y+R+14)+'" text-anchor="middle" font-size="11" font-weight="600" fill="#dff5ec" font-family="sans-serif">’+escHtml(sn)+’</text>’;
-if(m.year)html+=’<text x="'+p.x+'" y="'+(p.y+R+25)+'" text-anchor="middle" font-size="9" fill="#5a7268" font-family="sans-serif">’+m.year+(isDeceased&&m.deathYear?’ – ‘+m.deathYear:’’)+’</text>’;
+if(m.year)html+=’<text x="'+p.x+'" y="'+(p.y+R+25)+'" text-anchor="middle" font-size="9" fill="#5a7268" font-family="sans-serif">’+m.year+(isDeceased&&m.deathYear?’ - ‘+m.deathYear:’’)+’</text>’;
 if(m.ue)html+=’<text x="'+p.x+'" y="'+(p.y+R+36)+'" text-anchor="middle" font-size="8" font-weight="700" fill="'+(isDeceased?'#5a7268':'#00ff88')+'" font-family="sans-serif">’+m.ue+’-р үе</text>’;
 html+=’</g>’;
 });
@@ -1265,7 +1192,7 @@ nw.addEventListener(‘wheel’,e=>{e.preventDefault();treeZoom(e.deltaY<0?1.1:0
 }
 function initMap(){
 gmap=L.map(‘gmap’).setView([47.8864,106.9057],4);
-L.tileLayer(‘https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png’,{attribution:‘© OpenStreetMap’}).addTo(gmap);
+L.tileLayer(‘https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png’,{attribution:’© OpenStreetMap’}).addTo(gmap);
 }
 function renderMap(){
 if(!gmap)initMap();
@@ -1306,7 +1233,6 @@ function openModal(id){document.getElementById(id).classList.add(‘open’);}
 function closeModal(id){document.getElementById(id).classList.remove(‘open’);}
 let toastTimer;
 function showToast(msg,type=‘success’){const t=document.getElementById(‘toast’);t.textContent=msg;t.className=‘toast ‘+type+’ show’;clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove(‘show’),2800);}
-// ── STEP 6: STATS PAGE ────────────────────────────────────────────────────
 function renderStats(){
 const el=document.getElementById(‘stats-content’);if(!el)return;
 if(!allMembers.length){el.innerHTML=’<div class="empty-state">📊<br>Гишүүн байхгүй байна</div>’;return;}
@@ -1315,11 +1241,9 @@ const alive=allMembers.filter(m=>m.deceased!==‘yes’).length;
 const deceased=total-alive;
 const male=allMembers.filter(m=>m.huys===‘Эрэгтэй’).length;
 const female=allMembers.filter(m=>m.huys===‘Эмэгтэй’).length;
-// By ue
 const ueGroups={};allMembers.forEach(m=>{const u=parseInt(m.ue)||0;ueGroups[u]=(ueGroups[u]||0)+1;});
 const ues=Object.entries(ueGroups).sort((a,b)=>a[0]-b[0]);
 const maxUe=Math.max(…Object.values(ueGroups));
-// By age group
 const ageGroups={‘0-10’:0,‘11-20’:0,‘21-30’:0,‘31-40’:0,‘41-50’:0,‘51-60’:0,‘61+’:0};
 allMembers.forEach(m=>{
 if(!m.year||m.deceased===‘yes’)return;
@@ -1333,39 +1257,29 @@ else if(age<=60)ageGroups[‘51-60’]++;
 else ageGroups[‘61+’]++;
 });
 const maxAge=Math.max(…Object.values(ageGroups),1);
-// Countries
 const countries={};allMembers.forEach(m=>{
 const places=[m.livesPlace,m.bornPlace].filter(Boolean);
 places.forEach(p=>{const flag=getFlag(p);if(flag)countries[flag]=(countries[flag]||0)+1;});
 });
 document.getElementById(‘stats-sub’).textContent=total+’ гишүүн · ‘+Object.keys(ueGroups).filter(k=>k!==‘0’).length+’ үе’;
 const neonBar=‘background:linear-gradient(90deg,var(–neon),var(–neon2))’;
-const pinkBar=‘background:linear-gradient(90deg,#ff79a8,#ff4d6d)’;
-const warnBar=‘background:linear-gradient(90deg,var(–warn),#ff8c42)’;
 const blueBar=‘background:linear-gradient(90deg,var(–neon2),#0088ff)’;
 el.innerHTML=
-// Summary cards
 ‘<div class="stats-row">’+
 ‘<div class="stat-box"><div class="stat-num">’+alive+’</div><div class="stat-lbl">Амьд гишүүн</div></div>’+
 ‘<div class="stat-box"><div class="stat-num" style="background:linear-gradient(135deg,var(--text2),#8a9e94);-webkit-background-clip:text;-webkit-text-fill-color:transparent">’+deceased+’</div><div class="stat-lbl">Нас барсан</div></div>’+
 ‘</div>’+
-// Gender donut
 ‘<div class="section-label">👤 Хүйсийн харьцаа</div>’+
 ‘<div style="margin:0 14px 14px"><div style="display:flex;gap:8px">’+
 ‘<div style="flex:1;background:rgba(0,255,136,0.08);border:1px solid rgba(0,255,136,0.2);border-radius:12px;padding:12px;text-align:center"><div style="font-size:22px;font-weight:800;color:var(--neon);font-family:\'Cinzel\',serif">’+male+’</div><div style="font-size:11px;color:var(--text2)">👨 Эрэгтэй</div></div>’+
 ‘<div style="flex:1;background:rgba(255,121,168,0.08);border:1px solid rgba(255,121,168,0.2);border-radius:12px;padding:12px;text-align:center"><div style="font-size:22px;font-weight:800;color:#ff79a8;font-family:\'Cinzel\',serif">’+female+’</div><div style="font-size:11px;color:var(--text2)">👩 Эмэгтэй</div></div>’+
 ‘</div></div>’+
-// By ue bar chart
-‘<div class="section-label">🌳 Үеэр</div>’+
+‘<div class="section-label">🌲 Үеэр</div>’+
 ‘<div class="chart-bar-wrap">’+ues.filter(([k])=>k!==‘0’).map(([k,v])=>’<div class="chart-bar-row"><div class="chart-bar-label">’+k+’-р үе</div><div class="chart-bar-track"><div class="chart-bar-fill" style="width:'+Math.round(v/maxUe*100)+'%;'+neonBar+'">’+v+’</div></div><div class="chart-bar-val">’+v+’</div></div>’).join(’’)+’</div>’+
-// Age group bar chart
 ‘<div class="section-label">📅 Насны бүлэг</div>’+
 ‘<div class="chart-bar-wrap">’+Object.entries(ageGroups).map(([k,v])=>’<div class="chart-bar-row"><div class="chart-bar-label">’+k+’</div><div class="chart-bar-track"><div class="chart-bar-fill" style="width:'+Math.round(v/maxAge*100)+'%;'+blueBar+'">’+v+’</div></div><div class="chart-bar-val">’+v+’</div></div>’).join(’’)+’</div>’+
-// Countries
 (Object.keys(countries).length?’<div class="section-label">🌍 Байршил улс</div><div style="margin:0 14px 14px;display:flex;flex-wrap:wrap;gap:8px">’+Object.entries(countries).sort((a,b)=>b[1]-a[1]).map(([flag,cnt])=>’<div style="background:var(--card);border:1px solid var(--cb);border-radius:10px;padding:8px 12px;display:flex;align-items:center;gap:6px"><span style="font-size:18px">’+flag+’</span><span style="font-size:13px;font-weight:700;color:var(--text)">’+cnt+’</span></div>’).join(’’)+’</div>’:’’);
 }
-
-// ── STEP 6: ADVANCED SEARCH ───────────────────────────────────────────────
 function toggleAdvSearch(){
 const w=document.getElementById(‘adv-search-wrap’);
 w.classList.toggle(‘open’);
@@ -1386,8 +1300,6 @@ if(dec===‘dead’)list=list.filter(m=>m.deceased===‘yes’);
 renderMembers(list);
 showToast(list.length+’ гишүүн олдлоо’,‘success’);
 }
-
-// ── STEP 6: CHANGE PASSWORD ───────────────────────────────────────────────
 function openChangePw(){
 showConfirm(‘Нууц үг солих’,‘Шинэ нууц үгийг оруулна уу (6+ тэмдэгт)’,async()=>{
 const pw=prompt(‘Шинэ нууц үг (6+ тэмдэгт):’);
@@ -1395,20 +1307,15 @@ if(!pw||pw.length<6){showToast(‘6+ тэмдэгт байх ёстой’,‘er
 try{
 await fbAuthReq(‘update’,{idToken:fbToken,password:pw,returnSecureToken:true});
 showToast(‘Нууц үг амжилттай солигдлоо’,‘success’);
-}catch(e){showToast(’Алдаа: ’+translateAuthError(e.message),‘error’);}
+}catch(e){showToast(‘Алдаа: ‘+translateAuthError(e.message),‘error’);}
 });
 }
-
-// ── STEP 6: CLEAR CACHE ───────────────────────────────────────────────────
 function clearCache(){
 try{localStorage.removeItem(CACHE_KEY);showToast(‘Кэш цэвэрлэгдлээ’,‘success’);}
 catch(e){showToast(‘Кэш цэвэрлэхэд алдаа’,‘error’);}
 }
-
 let dmCurrentUID=null,dmCurrentName=’’,dmInterval=null;
-
-function dmThreadKey(uid1,uid2){return[uid1,uid2].sort().join(’__’);}
-
+function dmThreadKey(uid1,uid2){return[uid1,uid2].sort().join(’**’);}
 async function loadThreads(){
 const el=document.getElementById(‘threads-list’);
 el.innerHTML=’<div class="empty-state"><div class="spinner" style="margin:0 auto 12px"></div></div>’;
@@ -1421,7 +1328,7 @@ const threads=Object.entries(data)
 .map(([k,v])=>{
 const msgs=v.messages?Object.values(v.messages):[];
 const last=msgs.sort((a,b)=>b.ts-a.ts)[0];
-const otherUID=k.replace(myKey,’’).replace(’**’,’’).replace(’**’,’’);
+const otherUID=k.replace(myKey,’’).replace(’**’,’’).replace(’__’,’’);
 const other=allMembers.find(m=>safeKey(m.createdBy)===otherUID);
 const unread=msgs.filter(m=>m.from!==myKey&&!m.read).length;
 return{key:k,other,otherUID,last,unread};
@@ -1436,7 +1343,6 @@ return ‘<div class="dm-thread-item" onclick="openDM(\''+t.otherUID+'\',\''+esc
 }).join(’’);
 }catch(e){el.innerHTML=’<div class="empty-state">Уншихад алдаа</div>’;}
 }
-
 async function openDM(otherUID,name){
 dmCurrentUID=otherUID;dmCurrentName=name;
 const other=allMembers.find(m=>safeKey(m.createdBy)===otherUID);
@@ -1448,12 +1354,10 @@ const avWrap=document.getElementById(‘dm-header-avatar’);
 avWrap.innerHTML=other&&other.photo?’<img src="'+other.photo+'" style="width:36px;height:36px;border-radius:50%;object-fit:cover">’:’<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3a5248" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>’;
 openModal(‘dm-modal’);
 await loadDMMessages();
-// Mark unread as read
 markDMRead();
 if(dmInterval)clearInterval(dmInterval);
 dmInterval=setInterval(()=>{if(dmCurrentUID===otherUID)loadDMMessages();},5000);
 }
-
 async function loadDMMessages(){
 if(!dmCurrentUID)return;
 const key=dmThreadKey(safeKey(fbUID),dmCurrentUID);
@@ -1469,17 +1373,15 @@ return ‘<div style="display:flex;flex-direction:column;align-items:'+(isMine?'
 el.scrollTop=el.scrollHeight;
 }catch(e){}
 }
-
 async function sendDM(){
 const input=document.getElementById(‘dm-input’);
 const text=input.value.trim();if(!text||!dmCurrentUID)return;
 input.value=’’;
 const key=dmThreadKey(safeKey(fbUID),dmCurrentUID);
-const msgKey=Date.now()+’_’+Math.random().toString(36).substr(2,4);
+const msgKey=Date.now()+’*’+Math.random().toString(36).substr(2,4);
 await fbSet(‘dms/’+key+’/messages/’+msgKey,{text,from:safeKey(fbUID),ts:Date.now(),read:false});
 loadDMMessages();loadThreads();
 }
-
 async function markDMRead(){
 if(!dmCurrentUID)return;
 const key=dmThreadKey(safeKey(fbUID),dmCurrentUID);
@@ -1494,24 +1396,18 @@ await Promise.all(Object.entries(updates).map(([p,v])=>fbSet(p,v)));
 }
 }catch(e){}
 }
-
-// Open DM from member detail
 function openDMFromDetail(otherUID,name){
 closeModal(‘detail-modal’);
 setTimeout(()=>openDM(otherUID,name),200);
 }
-
-// ── STEP 4: RELATION SUGGESTIONS ─────────────────────────────────────────
 let dismissedSuggestions=[];
-
 function generateSuggestions(){
 const me=allMembers.find(m=>m.createdBy===fbUID);
-if(!me||!me.ovog)return[];
+if(!me||!me.ovog)return [];
 const suggestions=[];
 allMembers.forEach(other=>{
 if(other.key===me.key)return;
 if(dismissedSuggestions.includes(other.key))return;
-// Only suggest if same ovog but no ue set, or ue makes sense
 if(other.ovog&&other.ovog.trim().toLowerCase()===me.ovog.trim().toLowerCase()){
 const rel=getRelation(me,other);
 if(rel&&rel!==’’)suggestions.push({member:other,rel});
@@ -1519,28 +1415,19 @@ if(rel&&rel!==’’)suggestions.push({member:other,rel});
 });
 return suggestions.slice(0,3);
 }
-
 function renderSuggestions(){
 const el=document.getElementById(‘suggestions-list’);if(!el)return;
 const sugs=generateSuggestions();
 if(!sugs.length){el.innerHTML=’’;return;}
 el.innerHTML=’<div style="padding:4px 14px 6px;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text2)">🤝 Таны холбогдох хүмүүс</div>’+sugs.map(({member,rel})=>{
-const av1Html=allMembers.find(m=>m.createdBy===fbUID)?.photo?’<img class="suggestion-av" src="'+allMembers.find(m=>m.createdBy===fbUID).photo+'">’:’<div class="suggestion-av" style="display:flex;align-items:center;justify-content:center"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3a5248" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>’;
+const myMember=allMembers.find(m=>m.createdBy===fbUID);
+const av1Html=myMember&&myMember.photo?’<img class="suggestion-av" src="'+myMember.photo+'">’:’<div class="suggestion-av" style="display:flex;align-items:center;justify-content:center"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3a5248" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>’;
 const av2Html=member.photo?’<img class="suggestion-av" src="'+member.photo+'">’:’<div class="suggestion-av" style="display:flex;align-items:center;justify-content:center"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3a5248" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>’;
 return ‘<div class="suggestion-card"><div class="suggestion-avatars">’+av1Html+av2Html+’</div><div class="suggestion-text"><div class="suggestion-title">’+escHtml((member.ovog||’’)+’ ‘+(member.ner||’’))+’</div><div class="suggestion-sub">Таны <b style="color:var(--neon2)">’+rel+’</b> байж болох уу?</div></div><div class="suggestion-btns"><button class="sug-btn yes" onclick="acceptSuggestion(\''+member.key+'\')">✓</button><button class="sug-btn no" onclick="dismissSuggestion(\''+member.key+'\')">✕</button></div></div>’;
 }).join(’’);
 }
-
-function acceptSuggestion(key){
-openDetail(key);
-dismissSuggestion(key);
-}
-function dismissSuggestion(key){
-dismissedSuggestions.push(key);
-renderSuggestions();
-}
-
-// ── STEP 5: THEME TOGGLE ──────────────────────────────────────────────────
+function acceptSuggestion(key){openDetail(key);dismissSuggestion(key);}
+function dismissSuggestion(key){dismissedSuggestions.push(key);renderSuggestions();}
 function toggleTheme(){
 const isLight=document.body.classList.toggle(‘light’);
 document.getElementById(‘theme-btn’).textContent=isLight?‘☀️’:‘🌙’;
@@ -1552,11 +1439,8 @@ const saved=localStorage.getItem(‘udmiin_theme’);
 if(saved===‘light’){document.body.classList.add(‘light’);document.getElementById(‘theme-btn’).textContent=‘☀️’;}
 }catch(e){}
 }
-
-// ── STEP 5: OFFLINE CACHE ─────────────────────────────────────────────────
 const CACHE_KEY=‘udmiin_cache_v1’;
 let isOnline=navigator.onLine;
-
 function saveCache(data){
 try{localStorage.setItem(CACHE_KEY,JSON.stringify({ts:Date.now(),members:data.members||[],posts:data.posts||[]}));}catch(e){}
 }
@@ -1570,24 +1454,19 @@ isOnline=navigator.onLine;
 if(!isOnline){banner.classList.add(‘show’);}
 else{banner.classList.remove(‘show’);}
 }
-window.addEventListener(‘online’,()=>{updateOfflineBanner();showToast(‘Интернет холбогдлоо ✓’,‘success’);loadAllMembersCached();loadPostsCached();});
+window.addEventListener(‘online’,()=>{updateOfflineBanner();showToast(‘Интернет холбогдлоо’,‘success’);loadAllMembersCached();loadPostsCached();});
 window.addEventListener(‘offline’,()=>{updateOfflineBanner();showToast(‘Офлайн горим’,‘error’);loadFromCache();});
-
 function loadFromCache(){
 const cache=loadCache();
 if(!cache)return;
 if(cache.members&&cache.members.length){
 allMembers=cache.members;
 renderMembers(allMembers);renderRecent();updateStats();renderMyProfile();checkBirthdays();checkUpcomingBirthdays();updateComposerAvatar();renderUeChips();
-// Show cache indicator on home
 const sub=document.getElementById(‘home-greeting’);
-if(sub)sub.innerHTML=sub.textContent+’ <span class="cache-badge">🗂 кэш</span>’;
+if(sub)sub.innerHTML=sub.textContent+’ <span class="cache-badge">📂 кэш</span>’;
 }
 if(cache.posts&&cache.posts.length){allPosts=cache.posts;renderFeed();}
 }
-
-// Patch loadAllMembers to save cache
-const _origLoadAllMembers=loadAllMembers;
 function loadAllMembersCached(){
 if(!navigator.onLine){loadFromCache();return;}
 fbGet(‘members’).then(data=>{
@@ -1596,9 +1475,6 @@ saveCache({members:allMembers,posts:allPosts});
 renderMembers(allMembers);renderRecent();updateStats();renderMyProfile();checkBirthdays();checkUpcomingBirthdays();updateComposerAvatar();renderUeChips();
 }).catch(()=>{showToast(‘Уншихад алдаа’,‘error’);loadFromCache();});
 }
-
-// Patch loadPosts to save cache
-const _origLoadPosts=loadPosts;
 function loadPostsCached(){
 if(!navigator.onLine)return;
 fbGet(‘posts’).then(data=>{
@@ -1607,8 +1483,6 @@ saveCache({members:allMembers,posts:allPosts});
 renderFeed();
 }).catch(()=>{});
 }
-
-// ── STEP 3: QR CODE (pure canvas, no library needed) ──────────────────────
 let qrCurrentKey=null;
 function openQR(key){
 const m=allMembers.find(x=>x.key===key);if(!m)return;
@@ -1621,22 +1495,17 @@ drawQR(url);
 openModal(‘qr-modal’);
 }
 function drawQR(text){
-// Minimal QR-like visual using canvas — encodes URL as grid pattern
 const canvas=document.getElementById(‘qr-canvas’);
 const ctx=canvas.getContext(‘2d’);
 const size=200;canvas.width=size;canvas.height=size;
 ctx.fillStyle=’#ffffff’;ctx.fillRect(0,0,size,size);
-// Use a simple hash-based deterministic pattern per text
-const hash=Array.from(text).reduce((a,c)=>((a<<5)-a+c.charCodeAt(0))|0,0);
 const cells=25;const cs=size/cells;
-// Draw finder patterns (corners)
 function finder(ox,oy){
 ctx.fillStyle=’#000’;ctx.fillRect(ox*cs,oy*cs,7*cs,7*cs);
 ctx.fillStyle=’#fff’;ctx.fillRect((ox+1)*cs,(oy+1)*cs,5*cs,5*cs);
 ctx.fillStyle=’#000’;ctx.fillRect((ox+2)*cs,(oy+2)*cs,3*cs,3*cs);
 }
 finder(0,0);finder(cells-7,0);finder(0,cells-7);
-// Draw data cells based on text characters
 ctx.fillStyle=’#000’;
 for(let i=0;i<text.length;i++){
 const code=text.charCodeAt(i);
@@ -1645,14 +1514,12 @@ if((code>>b)&1){
 const idx=i*8+b;
 const row=Math.floor(idx/cells);const col=idx%cells;
 if(row<cells&&col<cells){
-// Skip finder pattern zones
 if((row<8&&col<8)||(row<8&&col>=cells-8)||(row>=cells-8&&col<8))continue;
 ctx.fillRect(col*cs+1,row*cs+1,cs-2,cs-2);
 }
 }
 }
 }
-// Add timing patterns
 ctx.fillStyle=’#000’;
 for(let i=8;i<cells-8;i+=2){ctx.fillRect(i*cs,6*cs,cs,cs);ctx.fillRect(6*cs,i*cs,cs,cs);}
 }
@@ -1670,8 +1537,6 @@ const a=document.createElement(‘a’);a.href=canvas.toDataURL();a.download=‘
 showToast(‘QR зураг татагдлаа’,‘success’);
 }
 }
-
-// ── STEP 3: GALLERY ────────────────────────────────────────────────────────
 let galleryCurrentKey=null;
 async function openGallery(key){
 galleryCurrentKey=key;
@@ -1691,7 +1556,7 @@ const prog=document.getElementById(‘gallery-upload-progress’);prog.style.dis
 try{
 for(const file of files){
 const url=await uploadFile(file,‘gallery’);
-const pushKey=Date.now()+’_’+Math.random().toString(36).substr(2,5);
+const pushKey=Date.now()+’*’+Math.random().toString(36).substr(2,5);
 await fbSet(‘members/’+galleryCurrentKey+’/gallery/’+pushKey,url);
 }
 showToast(‘Зураг нэмэгдлээ’,‘success’);
